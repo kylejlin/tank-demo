@@ -95,7 +95,7 @@ const options = {
 	color: 0xff8500,
 	colorRandomness: .1,
 	turbulence: .0,
-	lifetime: 0.5,
+	lifetime: 0.2,
 	size: 5,
 	sizeRandomness: 1,
 };
@@ -151,7 +151,7 @@ const update = (dt) => {
       fireCooldown = 1e3;
       boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
       boom.rotation.y = tankScene.rotation.y;
-      options.velocity.set(0, 0, 3);
+      options.velocity.set(0, 0, 2.5);
       tickOffset += tick;
       tick = 0;
     }
