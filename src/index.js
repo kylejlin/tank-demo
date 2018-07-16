@@ -12,7 +12,10 @@ import {
   AmbientLight,
   SpotLight,
   BoxGeometry,
+  Points,
+  Vector3,
 } from 'three';
+import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
 
 const TAU = 2 * Math.PI;
@@ -81,6 +84,28 @@ spot3.lookAt(0, 0, 0);
 spot4.lookAt(0, 0, 0);
 //spot1.power = 8 * Math.PI;
 
+const boom = new GPUParticleSystem({ maxParticles: 25000 });
+boom.position.set(0, 3, 0);
+scene.add(boom);
+const options = {
+	position: new Vector3(),
+	positionRandomness: .3,
+	velocity: new Vector3(),
+	velocityRandomness: .5,
+	color: 0xaa88ff,
+	colorRandomness: .2,
+	turbulence: .5,
+	lifetime: 2,
+	size: 5,
+	sizeRandomness: 1
+};
+const spawnerOptions = {
+	spawnRate: 1500,
+	horizontalSpeed: 1.5,
+	verticalSpeed: 1.33,
+	timeScale: 1
+};
+
 
 const floorMat = new MeshStandardMaterial({ color: 0x442200 });
 floorMat.metalness = 0.0;
@@ -99,6 +124,7 @@ let tankScene = null;
   scene.add(tankScene);
 });
 
+let tick = 0;
 const update = (dt) => {
   if (tankScene) {
     if (keys.LEFT) {
@@ -118,6 +144,18 @@ const update = (dt) => {
     camera.position.set(tankScene.position.x + 25, tankScene.position.y + 25, tankScene.position.z + 25);
     camera.lookAt(tankScene.position);
   }
+
+  // don't.
+  const delta = dt * 0.001 * spawnerOptions.timeScale;
+  tick += delta;
+  options.position.x = Math.sin(tick * spawnerOptions.horizontalSpeed) * 20;
+	options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 5;
+	for (let x = 0; x < spawnerOptions.spawnRate * delta; x++) {
+		// Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
+		// their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
+		boom.spawnParticle(options);
+	}
+  boom.update(tick);
 };
 
 let then = Date.now();
