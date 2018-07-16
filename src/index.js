@@ -17,14 +17,13 @@ import GLTFLoader from 'three-gltf-loader';
 const TAU = 2 * Math.PI;
 const TURN_SPEED = 0.002;
 const MOVE_SPEED = 0.01;
-const FRUS_WIDTH = 20;
-const FRUS_HEIGHT = 20;
+const _K = 0.05;
+const FRUS_WIDTH = window.innerWidth * _K;
+const FRUS_HEIGHT = window.innerHeight * _K;
 
 const scene = new Scene();
 scene.background = new Color(0x005588);
 const camera = new OrthographicCamera(FRUS_WIDTH / - 2, FRUS_WIDTH / 2, FRUS_HEIGHT / 2, FRUS_HEIGHT / - 2, 1, 1000 );
-camera.position.set(10, 10, 10);
-camera.lookAt(0, 1, 0);
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 window.addEventListener('resize', () => {
@@ -93,24 +92,16 @@ const update = (dt) => {
     if (keys.RIGHT) {
       tankScene.rotation.y -= TURN_SPEED * dt;
     }
-    if (keys.W) {
-      tankScene.position.z -= MOVE_SPEED * dt;
+    if (keys.UP) {
+      tankScene.position.x += Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
+      tankScene.position.z += Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
     }
-    if (keys.S) {
-      tankScene.position.z += MOVE_SPEED * dt;
+    if (keys.DOWN) {
+      tankScene.position.x -= Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
+      tankScene.position.z -= Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
     }
-    if (keys.A) {
-      tankScene.position.x -= MOVE_SPEED * dt;
-    }
-    if (keys.D) {
-      tankScene.position.x += MOVE_SPEED * dt;
-    }
-    if (keys.Q) {
-      tankScene.position.y += MOVE_SPEED * dt;
-    }
-    if (keys.E) {
-      tankScene.position.y -= MOVE_SPEED * dt;
-    }
+    camera.position.set(tankScene.position.x + 10, tankScene.position.y + 10, tankScene.position.z + 10);
+    camera.lookAt(tankScene.position);
   }
 };
 
