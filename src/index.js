@@ -85,25 +85,22 @@ spot4.lookAt(0, 0, 0);
 //spot1.power = 8 * Math.PI;
 
 const boom = new GPUParticleSystem({ maxParticles: 25000 });
-boom.position.set(0, 3, 0);
+boom.position.set(0, 0, 0);
 scene.add(boom);
 const options = {
 	position: new Vector3(),
 	positionRandomness: .3,
 	velocity: new Vector3(),
-	velocityRandomness: .5,
-	color: 0xaa88ff,
-	colorRandomness: .2,
-	turbulence: .5,
-	lifetime: 2,
+	velocityRandomness: .0,
+	color: 0xff8500,
+	colorRandomness: .1,
+	turbulence: .0,
+	lifetime: 0.5,
 	size: 5,
-	sizeRandomness: 1
+	sizeRandomness: 1,
 };
 const spawnerOptions = {
-	spawnRate: 1500,
-	horizontalSpeed: 1.5,
-	verticalSpeed: 1.33,
-	timeScale: 1
+	spawnRate: 2500,
 };
 
 
@@ -125,13 +122,21 @@ let tankScene = null;
 });
 
 let tick = 0;
+let tickOffset = 0;
+let fireCooldown = 0;
 const update = (dt) => {
   if (tankScene) {
     if (keys.LEFT) {
       tankScene.rotation.y += TURN_SPEED * dt;
+      while (tankScene.rotation.y > TAU) {
+        tankScene.rotation.y -= TAU;
+      }
     }
     if (keys.RIGHT) {
       tankScene.rotation.y -= TURN_SPEED * dt;
+      while (tankScene.rotation.y < 0) {
+        tankScene.rotation.y += TAU;
+      }
     }
     if (keys.UP) {
       tankScene.position.x += Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
@@ -141,21 +146,32 @@ const update = (dt) => {
       tankScene.position.x -= Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
       tankScene.position.z -= Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
     }
+    fireCooldown -= dt;
+    if (keys.SPACE && fireCooldown <= 0) {
+      fireCooldown = 1e3;
+      boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
+      boom.rotation.y = tankScene.rotation.y;
+      options.velocity.set(0, 0, 3);
+      tickOffset += tick;
+      tick = 0;
+    }
     camera.position.set(tankScene.position.x + 25, tankScene.position.y + 25, tankScene.position.z + 25);
     camera.lookAt(tankScene.position);
   }
 
-  // don't.
-  const delta = dt * 0.001 * spawnerOptions.timeScale;
-  tick += delta;
-  options.position.x = Math.sin(tick * spawnerOptions.horizontalSpeed) * 20;
-	options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 5;
-	for (let x = 0; x < spawnerOptions.spawnRate * delta; x++) {
-		// Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
-		// their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
-		boom.spawnParticle(options);
-	}
-  boom.update(tick);
+  // Delta-time in seconds.
+  const dts = dt * 0.001;
+  tick += dts;
+  //options.position.x = Math.sin(tick * spawnerOptions.horizontalSpeed) * 20;
+  //options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 5;
+  if (tick < 0.2) {
+    for (let x = 0; x < spawnerOptions.spawnRate * dts; x++) {
+      // Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
+      // their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
+      boom.spawnParticle(options);
+    }
+  }
+  boom.update(tick + tickOffset);
 };
 
 let then = Date.now();
