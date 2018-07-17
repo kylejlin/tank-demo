@@ -176,7 +176,7 @@ let hasTankExploded = false;
 let tankHealth = MAX_HEALTH;
 let selfHarmCooldown = 0;
 const update = (dt) => {
-  const healthBarVw = 20 * tankHealth / MAX_HEALTH + 'vw';
+  const healthBarVw = 40 * tankHealth / MAX_HEALTH + 'vw';
   healthBarFg.style.width = healthBarVw;
   healthBarFg.style.display = tankHealth > 0
     ? 'block'
