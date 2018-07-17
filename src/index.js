@@ -164,6 +164,9 @@ let tickOffset = 0;
 let kTick = 0;
 let kTickOffset = 0;
 let fireCooldown = 0;
+let hasTankExploded = false;
+let tankHealth = 100;
+let selfHarmCooldown = 0;
 const update = (dt) => {
   if (tankScene) {
     if (keys.LEFT) {
@@ -187,6 +190,12 @@ const update = (dt) => {
       tankScene.position.z -= Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
     }
 
+    if (keys.W && selfHarmCooldown <= 0) {
+      selfHarmCooldown = FIRE_COOLDOWN;
+      tankHealth -= 20;
+    }
+    selfHarmCooldown -= dt;
+
     boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
 
     fireCooldown -= dt;
@@ -209,8 +218,6 @@ const update = (dt) => {
       options.velocity.set(0, 0, 2.5);
       tickOffset += tick;
       tick = 0;
-      kTickOffset += kTick;
-      kTick = 0;
     }
     if (fireCooldown > FIRE_COOLDOWN - AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3) {
       gunMixer.update(dt * 0.001);
@@ -218,6 +225,14 @@ const update = (dt) => {
     }
     camera.position.set(tankScene.position.x + 25, tankScene.position.y + 25, tankScene.position.z + 25);
     camera.lookAt(tankScene.position);
+  }
+
+  if (!hasTankExploded && tankHealth <= 0) {
+    kaboom.position.set(tankScene.position.x, tankScene.position.y, tankScene.position.z);
+    scene.remove(tankScene);
+    kTickOffset += kTick;
+    kTick = 0
+    hasTankExploded = true;
   }
 
   // Delta-time in seconds.
