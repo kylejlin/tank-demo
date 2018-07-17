@@ -22,7 +22,7 @@ import GLTFLoader from 'three-gltf-loader';
 // http://soundbible.com/1919-Shotgun-Blast.html
 import tankFireSrc from './audio/tank-fire.mp3';
 // Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
-import exposionSrc from './audio/explosion.mp3';
+import exposionSrc from './audio/longer-explosion.wav';
 import { Howl } from 'howler';
 
 const tankFireSound = new Howl({
