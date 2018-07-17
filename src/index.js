@@ -19,12 +19,17 @@ import {
 } from 'three';
 import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
-// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
+// http://soundbible.com/1919-Shotgun-Blast.html
 import tankFireSrc from './audio/tank-fire.mp3';
+// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
+import exposionSrc from './audio/explosion.mp3';
 import { Howl } from 'howler';
 
 const tankFireSound = new Howl({
-  src: tankFireSrc
+  src: tankFireSrc,
+});
+const explosionSound = new Howl({
+  src: exposionSrc,
 });
 
 const TAU = 2 * Math.PI;
@@ -159,10 +164,10 @@ let turretMixer = null;
   console.log(gltf);
 });
 
-let tick = 0;
-let tickOffset = 0;
-let kTick = 0;
-let kTickOffset = 0;
+let tick = 1;
+let tickOffset = 1;
+let kTick = 1;
+let kTickOffset = 1;
 let fireCooldown = 0;
 let hasTankExploded = false;
 let tankHealth = 100;
@@ -231,7 +236,8 @@ const update = (dt) => {
     kaboom.position.set(tankScene.position.x, tankScene.position.y, tankScene.position.z);
     scene.remove(tankScene);
     kTickOffset += kTick;
-    kTick = 0
+    kTick = 0;
+    explosionSound.play();
     hasTankExploded = true;
   }
 
