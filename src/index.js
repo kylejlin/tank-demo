@@ -19,6 +19,13 @@ import {
 } from 'three';
 import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
+// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
+import tankFireSrc from './audio/tank-fire.mp3';
+import { Howl } from 'howler';
+
+const tankFireSound = new Howl({
+  src: tankFireSrc
+});
 
 const TAU = 2 * Math.PI;
 const TURN_SPEED = 0.002;
@@ -161,6 +168,8 @@ const update = (dt) => {
     fireCooldown -= dt;
     if (keys.SPACE && fireCooldown <= 0) {
       fireCooldown = FIRE_COOLDOWN;
+
+      tankFireSound.play();
 
       const gunClip = AnimationClip.findByName(tankAnimations, 'GunAction');
       const gunAction = gunMixer.clipAction(gunClip);
