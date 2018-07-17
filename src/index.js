@@ -14,6 +14,8 @@ import {
   BoxGeometry,
   Points,
   Vector3,
+  AnimationClip,
+  AnimationMixer,
 } from 'three';
 import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
@@ -22,6 +24,7 @@ const TAU = 2 * Math.PI;
 const TURN_SPEED = 0.002;
 const MOVE_SPEED = 0.01;
 const SPOT_COLOR = 0xaaaaaa;
+const FIRE_COOLDOWN = 1e3;
 
 const scene = new Scene();
 scene.background = new Color(0x005588);
@@ -115,10 +118,19 @@ floor.rotation.x -= 0.25 * TAU;
 scene.add(floor);
 
 let tankScene = null;
-(new GLTFLoader()).load('./models/tank4.glb', (gltf) => {
+let tankAnimations = null;
+let gunMixer = null;
+let turretMixer = null;
+(new GLTFLoader()).load('./models/tank2.glb', (gltf) => {
   tankScene = gltf.scene;
+  tankAnimations = gltf.animations;
+  const gun = tankScene.children.find(m => m.name === 'Gun');
+  gunMixer = new AnimationMixer(gun);
+  const turret = tankScene.children.find(m => m.name === 'Turret');
+  turretMixer = new AnimationMixer(turret);
   tankScene.position.y = 1;
   scene.add(tankScene);
+  console.log(gltf);
 });
 
 let tick = 0;
@@ -148,12 +160,26 @@ const update = (dt) => {
     }
     fireCooldown -= dt;
     if (keys.SPACE && fireCooldown <= 0) {
-      fireCooldown = 1e3;
+      fireCooldown = FIRE_COOLDOWN;
+
+      const gunClip = AnimationClip.findByName(tankAnimations, 'GunAction');
+      const gunAction = gunMixer.clipAction(gunClip);
+      gunAction.play();
+      gunMixer.time = 0;
+      const turretClip = AnimationClip.findByName(tankAnimations, 'TurretAction');
+      const turretAction = turretMixer.clipAction(turretClip);
+      turretAction.play();
+      turretMixer.time = 0;
+
       boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
       boom.rotation.y = tankScene.rotation.y;
       options.velocity.set(0, 0, 2.5);
       tickOffset += tick;
       tick = 0;
+    }
+    if (fireCooldown > FIRE_COOLDOWN - AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3) {
+      gunMixer.update(dt * 0.001);
+      turretMixer.update(dt * 0.001);
     }
     camera.position.set(tankScene.position.x + 25, tankScene.position.y + 25, tankScene.position.z + 25);
     camera.lookAt(tankScene.position);
