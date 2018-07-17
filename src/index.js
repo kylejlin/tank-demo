@@ -31,7 +31,7 @@ const TAU = 2 * Math.PI;
 const TURN_SPEED = 0.002;
 const MOVE_SPEED = 0.01;
 const SPOT_COLOR = 0xaaaaaa;
-const FIRE_COOLDOWN = 1e3;
+const FIRE_COOLDOWN = 0.4e3;
 
 const scene = new Scene();
 scene.background = new Color(0x005588);
