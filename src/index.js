@@ -32,11 +32,14 @@ const explosionSound = new Howl({
   src: exposionSrc,
 });
 
+const healthBarFg = document.querySelector('.health-bar-fg');
+
 const TAU = 2 * Math.PI;
 const TURN_SPEED = 0.002;
 const MOVE_SPEED = 0.01;
 const SPOT_COLOR = 0xaaaaaa;
 const FIRE_COOLDOWN = 0.4e3;
+const MAX_HEALTH = 100;
 
 const scene = new Scene();
 scene.background = new Color(0x005588);
@@ -170,9 +173,15 @@ let kTick = 1;
 let kTickOffset = 1;
 let fireCooldown = 0;
 let hasTankExploded = false;
-let tankHealth = 100;
+let tankHealth = MAX_HEALTH;
 let selfHarmCooldown = 0;
 const update = (dt) => {
+  const healthBarVw = 20 * tankHealth / MAX_HEALTH + 'vw';
+  healthBarFg.style.width = healthBarVw;
+  healthBarFg.style.display = tankHealth > 0
+    ? 'block'
+    : 'none';
+
   if (tankScene) {
     if (keys.LEFT) {
       tankScene.rotation.y += TURN_SPEED * dt;
