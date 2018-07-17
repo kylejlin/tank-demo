@@ -113,6 +113,25 @@ const spawnerOptions = {
 	spawnRate: 2500,
 };
 
+const kaboom = new GPUParticleSystem({ maxParticles: 25000 });
+kaboom.position.set(0, 3, 0);
+scene.add(kaboom);
+const kOptions = {
+	position: new Vector3(),
+	positionRandomness: 1,
+	velocity: new Vector3(0, 0.1, 0),
+	velocityRandomness: .9,
+	color: 0xff8500,
+	colorRandomness: .1,
+	turbulence: 0.0,
+	lifetime: 0.8,
+	size: 10,
+	sizeRandomness: 3,
+};
+const kSpawnerOptions = {
+	spawnRate: 25000,
+};
+
 
 const floorMat = new MeshStandardMaterial({ color: 0x442200 });
 floorMat.metalness = 0.0;
@@ -142,6 +161,8 @@ let turretMixer = null;
 
 let tick = 0;
 let tickOffset = 0;
+let kTick = 0;
+let kTickOffset = 0;
 let fireCooldown = 0;
 const update = (dt) => {
   if (tankScene) {
@@ -188,6 +209,8 @@ const update = (dt) => {
       options.velocity.set(0, 0, 2.5);
       tickOffset += tick;
       tick = 0;
+      kTickOffset += kTick;
+      kTick = 0;
     }
     if (fireCooldown > FIRE_COOLDOWN - AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3) {
       gunMixer.update(dt * 0.001);
@@ -200,16 +223,21 @@ const update = (dt) => {
   // Delta-time in seconds.
   const dts = dt * 0.001;
   tick += dts;
-  //options.position.x = Math.sin(tick * spawnerOptions.horizontalSpeed) * 20;
-  //options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 5;
+  kTick += dts;
+
   if (tick < 0.2) {
     for (let x = 0; x < spawnerOptions.spawnRate * dts; x++) {
-      // Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
-      // their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
       boom.spawnParticle(options);
     }
   }
   boom.update(tick + tickOffset);
+
+  if (kTick < 0.2) {
+    for (let x = 0; x < kSpawnerOptions.spawnRate * dts; x++) {
+      kaboom.spawnParticle(kOptions);
+    }
+  }
+  kaboom.update(kTick + kTickOffset);
 };
 
 let then = Date.now();
