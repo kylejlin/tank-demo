@@ -165,6 +165,9 @@ const update = (dt) => {
       tankScene.position.x -= Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
       tankScene.position.z -= Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
     }
+
+    boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
+
     fireCooldown -= dt;
     if (keys.SPACE && fireCooldown <= 0) {
       fireCooldown = FIRE_COOLDOWN;
