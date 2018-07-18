@@ -164,7 +164,15 @@ let turretMixer = null;
   turretMixer = new AnimationMixer(turret);
   tankScene.position.y = 1;
   scene.add(tankScene);
-  console.log(gltf);
+});
+
+let donutScene = null;
+(new GLTFLoader()).load('./models/donut.glb', (gltf) => {
+  donutScene = gltf.scene;
+  donutScene.position.set(0, 0, 0);
+  donutScene.scale.set(2, 2, 2);
+  scene.add(donutScene);
+  console.log('hide', donutScene);
 });
 
 let tick = 1;
