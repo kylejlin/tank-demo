@@ -25,6 +25,10 @@ import tankFireSrc from './audio/tank-fire.mp3';
 // Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
 import exposionSrc from './audio/longer-explosion.wav';
 import { Howl } from 'howler';
+import { Entity, Scene as ECSScene } from 'indexed-ecs';
+import createExplosionSystem from './systems/createExplosionSystem';
+
+
 
 const tankFireSound = new Howl({
   src: tankFireSrc,
@@ -43,6 +47,10 @@ const FIRE_COOLDOWN = 0.4e3;
 const MAX_HEALTH = 100;
 
 const scene = new Scene();
+
+const escene = new ECSScene();
+escene.addSystem(createExplosionSystem(scene));
+
 scene.background = new Color(0x005588);
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 const renderer = new WebGLRenderer();
@@ -185,6 +193,9 @@ let hasTankExploded = false;
 let tankHealth = MAX_HEALTH;
 let selfHarmCooldown = 0;
 const update = (dt) => {
+  escene.globals.deltaTime = dt;
+  escene.update();
+
   const healthBarVw = 40 * tankHealth / MAX_HEALTH + 'vw';
   healthBarFg.style.width = healthBarVw;
   healthBarFg.style.display = tankHealth > 0
@@ -234,9 +245,25 @@ const update = (dt) => {
       if (hits.length > 0 && !donutHasExploded) {
         donutHasExploded = true;
         scene.remove(donutScene);
-        kaboom.position.copy(donutScene.position);
-        kTickOffset += kTick;
-        kTick = 0;
+
+        const explosion = new Entity();
+        explosion.addComponent({
+          name: 'Explosion',
+          position: donutScene.position.clone(),
+        	positionRandomness: 1,
+        	velocity: new Vector3(0, 0.1, 0),
+        	velocityRandomness: .9,
+        	color: 0xff8500,
+        	colorRandomness: .1,
+        	turbulence: 0.0,
+        	lifetime: 0.8,
+        	size: 10,
+        	sizeRandomness: 3,
+          spawnRate: 25000,
+          emissionDuration: 0.2,
+        })
+        escene.addEntity(explosion);
+        
         explosionSound.play();
       }
 
@@ -266,10 +293,26 @@ const update = (dt) => {
   }
 
   if (!hasTankExploded && tankHealth <= 0) {
-    kaboom.position.set(tankScene.position.x, tankScene.position.y, tankScene.position.z);
     scene.remove(tankScene);
-    kTickOffset += kTick;
-    kTick = 0;
+
+    const explosion = new Entity();
+    explosion.addComponent({
+      name: 'Explosion',
+      position: new Vector3(tankScene.position.x, tankScene.position.y, tankScene.position.z),
+    	positionRandomness: 1,
+    	velocity: new Vector3(0, 0.1, 0),
+    	velocityRandomness: .9,
+    	color: 0xff8500,
+    	colorRandomness: .1,
+    	turbulence: 0.0,
+    	lifetime: 0.8,
+    	size: 10,
+    	sizeRandomness: 3,
+      spawnRate: 25000,
+      emissionDuration: 0.2,
+    })
+    escene.addEntity(explosion);
+
     explosionSound.play();
     hasTankExploded = true;
   }
