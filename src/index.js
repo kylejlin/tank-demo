@@ -34,6 +34,7 @@ const tankFireSound = new Howl({
 });
 const explosionSound = new Howl({
   src: exposionSrc,
+  volume: 5.5,
 });
 
 const healthBarFg = document.querySelector('.health-bar-fg');
