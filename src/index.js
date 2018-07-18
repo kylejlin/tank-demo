@@ -16,6 +16,7 @@ import {
   Vector3,
   AnimationClip,
   AnimationMixer,
+  Raycaster,
 } from 'three';
 import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
@@ -167,12 +168,12 @@ let turretMixer = null;
 });
 
 let donutScene = null;
+let donutHasExploded = false;
 (new GLTFLoader()).load('./models/donut.glb', (gltf) => {
   donutScene = gltf.scene;
   donutScene.position.set(0, 0, 0);
-  donutScene.scale.set(2, 2, 2);
+  donutScene.scale.set(2.5, 2.5, 2.5);
   scene.add(donutScene);
-  console.log('hide', donutScene);
 });
 
 let tick = 1;
@@ -223,6 +224,21 @@ const update = (dt) => {
     fireCooldown -= dt;
     if (keys.SPACE && fireCooldown <= 0) {
       fireCooldown = FIRE_COOLDOWN;
+
+      const raycaster = new Raycaster();
+      raycaster.set(
+        tankScene.position.clone().add(new Vector3(Math.sin(tankScene.rotation.y) * 2.3, 1.6, Math.cos(tankScene.rotation.y) * 2.3)),
+        (new Vector3(0, 0, 1)).applyEuler(tankScene.rotation)
+      );
+      const hits = raycaster.intersectObject(donutScene, true);
+      if (hits.length > 0 && !donutHasExploded) {
+        donutHasExploded = true;
+        scene.remove(donutScene);
+        kaboom.position.copy(donutScene.position);
+        kTickOffset += kTick;
+        kTick = 0;
+        explosionSound.play();
+      }
 
       tankFireSound.play();
 
