@@ -171,7 +171,7 @@ let donutScene = null;
 let donutHasExploded = false;
 (new GLTFLoader()).load('./models/donut.glb', (gltf) => {
   donutScene = gltf.scene;
-  donutScene.position.set(0, 0, 0);
+  donutScene.position.set(-20, 0, -30);
   donutScene.scale.set(2.5, 2.5, 2.5);
   scene.add(donutScene);
 });
