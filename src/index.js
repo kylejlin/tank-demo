@@ -26,6 +26,8 @@ import exposionSrc from './audio/longer-explosion.wav';
 import { Howl } from 'howler';
 import { Entity, Scene as ECSScene } from 'indexed-ecs';
 import createExplosionSystem from './systems/createExplosionSystem';
+import createDonutSystem from './systems/createDonutSystem';
+import donutSpawnerSystem from  './systems/donutSpawnerSystem';
 
 
 
@@ -50,6 +52,18 @@ const scene = new Scene();
 
 const escene = new ECSScene();
 escene.addSystem(createExplosionSystem(scene));
+escene.addSystem(createDonutSystem(scene));
+escene.addSystem(donutSpawnerSystem);
+const spawner = new Entity;
+spawner.addComponent({
+  name: 'DonutSpawner',
+  cooldownRange: [1000, 5000],
+  xRange: [-50, 50],
+  yRange: [0, 0],
+  zRange: [-50, 50],
+  healthRange: [20, 100],
+});
+escene.addEntity(spawner);
 
 scene.background = new Color(0x005588);
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
