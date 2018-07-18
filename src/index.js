@@ -18,7 +18,6 @@ import {
   AnimationMixer,
   Raycaster,
 } from 'three';
-import GPUParticleSystem from './GPUParticleSystem';
 import GLTFLoader from 'three-gltf-loader';
 // http://soundbible.com/1919-Shotgun-Blast.html
 import tankFireSrc from './audio/tank-fire.mp3';
@@ -111,45 +110,6 @@ spot3.lookAt(0, 0, 0);
 spot4.lookAt(0, 0, 0);
 //spot1.power = 8 * Math.PI;
 
-const boom = new GPUParticleSystem({ maxParticles: 25000 });
-boom.position.set(0, 0, 0);
-scene.add(boom);
-const options = {
-	position: new Vector3(),
-	positionRandomness: .3,
-	velocity: new Vector3(),
-	velocityRandomness: .0,
-	color: 0xff8500,
-	colorRandomness: .1,
-	turbulence: .0,
-	lifetime: 0.2,
-	size: 5,
-	sizeRandomness: 1,
-};
-const spawnerOptions = {
-	spawnRate: 2500,
-};
-
-const kaboom = new GPUParticleSystem({ maxParticles: 25000 });
-kaboom.position.set(0, 3, 0);
-scene.add(kaboom);
-const kOptions = {
-	position: new Vector3(),
-	positionRandomness: 1,
-	velocity: new Vector3(0, 0.1, 0),
-	velocityRandomness: .9,
-	color: 0xff8500,
-	colorRandomness: .1,
-	turbulence: 0.0,
-	lifetime: 0.8,
-	size: 10,
-	sizeRandomness: 3,
-};
-const kSpawnerOptions = {
-	spawnRate: 25000,
-};
-
-
 const floorMat = new MeshStandardMaterial({ color: 0x442200 });
 floorMat.metalness = 0.0;
 floorMat.roughness = 0.8;
@@ -186,8 +146,6 @@ let donutHasExploded = false;
 
 let tick = 1;
 let tickOffset = 1;
-let kTick = 1;
-let kTickOffset = 1;
 let fireCooldown = 0;
 let hasTankExploded = false;
 let tankHealth = MAX_HEALTH;
@@ -230,8 +188,6 @@ const update = (dt) => {
     }
     selfHarmCooldown -= dt;
 
-    boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
-
     fireCooldown -= dt;
     if (keys.SPACE && fireCooldown <= 0) {
       fireCooldown = FIRE_COOLDOWN;
@@ -261,9 +217,9 @@ const update = (dt) => {
         	sizeRandomness: 3,
           spawnRate: 25000,
           emissionDuration: 0.2,
-        })
+        });
         escene.addEntity(explosion);
-        
+
         explosionSound.play();
       }
 
@@ -278,11 +234,24 @@ const update = (dt) => {
       turretAction.play();
       turretMixer.time = 0;
 
-      boom.position.set(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3);
-      boom.rotation.y = tankScene.rotation.y;
-      options.velocity.set(0, 0, 2.5);
-      tickOffset += tick;
-      tick = 0;
+      const explosion = new Entity();
+      const k = (new Vector3(0, 0, 1.45)).applyEuler(tankScene.rotation);
+      explosion.addComponent({
+        name: 'Explosion',
+        position: new Vector3(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3),
+      	positionRandomness: .3,
+      	velocity: k,
+      	velocityRandomness: .0,
+      	color: 0xaa4400,
+      	colorRandomness: .1,
+      	turbulence: .0,
+      	lifetime: 0.2,
+      	size: 5,
+      	sizeRandomness: 1,
+        spawnRate: 2500,
+        emissionDuration: 0.2,
+      });
+      escene.addEntity(explosion);
     }
     if (fireCooldown > FIRE_COOLDOWN - AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3) {
       gunMixer.update(dt * 0.001);
@@ -310,31 +279,12 @@ const update = (dt) => {
     	sizeRandomness: 3,
       spawnRate: 25000,
       emissionDuration: 0.2,
-    })
+    });
     escene.addEntity(explosion);
 
     explosionSound.play();
     hasTankExploded = true;
   }
-
-  // Delta-time in seconds.
-  const dts = dt * 0.001;
-  tick += dts;
-  kTick += dts;
-
-  if (tick < 0.2) {
-    for (let x = 0; x < spawnerOptions.spawnRate * dts; x++) {
-      boom.spawnParticle(options);
-    }
-  }
-  boom.update(tick + tickOffset);
-
-  if (kTick < 0.2) {
-    for (let x = 0; x < kSpawnerOptions.spawnRate * dts; x++) {
-      kaboom.spawnParticle(kOptions);
-    }
-  }
-  kaboom.update(kTick + kTickOffset);
 };
 
 let then = Date.now();
