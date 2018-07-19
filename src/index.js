@@ -140,7 +140,7 @@ scene.add(spot1);
 scene.add(spot2);
 scene.add(spot3);
 scene.add(spot4);
-spot1.power = spot2.power = spot3.power = spot4.power = 8 * Math.PI;
+spot1.power = spot2.power = spot3.power = spot4.power = 4 * Math.PI;
 spot1.position.set(50, 10, 50);
 spot2.position.set(-50, 10, 50);
 spot3.position.set(-50, 10, -50);

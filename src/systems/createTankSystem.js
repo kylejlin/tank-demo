@@ -1,6 +1,14 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
 import GLTFLoader from 'three-gltf-loader';
 import { AnimationClip, AnimationMixer, Vector3 } from 'three';
+import { Howl } from 'howler';
+// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
+import exposionSrc from '../audio/longer-explosion.wav';
+
+const explosionSound = new Howl({
+  src: exposionSrc,
+  volume: 5.5,
+});
 
 let tankScene = null;
 let tankAnimations = null;
@@ -58,6 +66,8 @@ const createTankSystem = (scene) => {
             emissionDuration: 0.2,
           });
           escene.addEntity(explosion);
+
+          explosionSound.play();
           continue;
         }
 
