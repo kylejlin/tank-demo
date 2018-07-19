@@ -32,6 +32,7 @@ import createTankSystem from './systems/createTankSystem';
 import playerControlSystem from './systems/playerControlSystem';
 import shotSystem from './systems/shotSystem';
 import createCameraSystem from './systems/createCameraSystem';
+import createPietinSystem from './systems/createPietinSystem';
 
 
 const tankFireSound = new Howl({
@@ -59,6 +60,7 @@ escene.addSystem(createTankSystem(scene));
 escene.addSystem(playerControlSystem);
 escene.addSystem(shotSystem);
 escene.addSystem(createCameraSystem(camera));
+escene.addSystem(createPietinSystem(scene));
 const spawner = new Entity;
 spawner.addComponent({
   name: 'DonutSpawner',
@@ -68,7 +70,7 @@ spawner.addComponent({
   zRange: [-50, 50],
   healthRange: [5, 20],
 });
-escene.addEntity(spawner);
+//escene.addEntity(spawner);
 const tank = new Entity();
 tank.addComponent({
   name: 'Tank',
@@ -86,6 +88,18 @@ tank.addComponent({
   name: 'PlayerTank',
 });
 escene.addEntity(tank);
+const test = new Entity();
+test.addComponent({
+  name: 'Pietin',
+  x: -15,
+  y: 0,
+  z: -20,
+  aimingRange: 20,
+  firingRange: 15,
+  rotY: 40,
+  health: 25,
+});
+escene.addEntity(test);
 
 scene.background = new Color(0x005588);
 const renderer = new WebGLRenderer();
