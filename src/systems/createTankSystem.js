@@ -45,7 +45,15 @@ const createTankSystem = (scene) => {
           ent.Tank.turretAction_.play();
         }
 
-        if (ent.Tank.health <= 0) {
+        if (!ent.Hittable) {
+          ent.addComponent({
+            name: 'Hittable',
+            health: ent.Tank.health,
+            scene_: ent.Tank.scene_,
+          });
+        }
+
+        if (ent.Hittable.health <= 0) {
           scene.remove(ent.Tank.scene_);
           escene.removeEntity(ent);
 

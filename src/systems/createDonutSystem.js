@@ -34,7 +34,15 @@ const createDonutSystem = (scene) => {
           scene.add(clone);
         }
 
-        if (ent.Donut.health <= 0) {
+        if (!ent.Hittable) {
+          ent.addComponent({
+            name: 'Hittable',
+            health: ent.Donut.health,
+            scene_: ent.Donut.scene_,
+          });
+        }
+
+        if (ent.Hittable.health <= 0) {
           scene.remove(ent.Donut.scene_);
           escene.removeEntity(ent);
 

@@ -47,7 +47,15 @@ const createPietinSystem = (scene) => {
           ent.Pietin.spinnables_ = spinnables;
         }
 
-        if (ent.Pietin.health <= 0) {
+        if (!ent.Hittable) {
+          ent.addComponent({
+            name: 'Hittable',
+            health: ent.Pietin.health,
+            scene_: ent.Pietin.scene_,
+          });
+        }
+
+        if (ent.Hittable.health <= 0) {
           scene.remove(ent.Pietin.scene_);
           escene.removeEntity(ent);
 

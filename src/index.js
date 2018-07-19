@@ -96,10 +96,22 @@ test.addComponent({
   z: -20,
   aimingRange: 20,
   firingRange: 15,
-  rotY: 40,
+  rotY: 0.4 * TAU,
   health: 25,
 });
 escene.addEntity(test);
+const test2 = new Entity();
+test2.addComponent({
+  name: 'Pietin',
+  x: -20,
+  y: 0,
+  z: -25,
+  aimingRange: 20,
+  firingRange: 15,
+  rotY: 0,
+  health: 25,
+});
+escene.addEntity(test2);
 
 scene.background = new Color(0x005588);
 const renderer = new WebGLRenderer();
