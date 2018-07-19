@@ -40,7 +40,8 @@ const createTankSystem = (scene) => {
         if (!ent.Shootable) {
           ent.addComponent({
             name: 'Shootable',
-            health: ent.Tank.health,
+            maxHealth: ent.Tank.maxHealth,
+            health: ent.Tank.maxHealth,
             scene_: ent.Tank.scene_,
           });
         }

@@ -34,7 +34,7 @@ import shotSystem from './systems/shotSystem';
 import createCameraSystem from './systems/createCameraSystem';
 import createPietinSystem from './systems/createPietinSystem';
 import createShootableSystem from './systems/createShootableSystem';
-
+import createHealthBarSystem from './systems/createHealthBarSystem';
 
 const tankFireSound = new Howl({
   src: tankFireSrc,
@@ -63,10 +63,11 @@ escene.addSystem(shotSystem);
 escene.addSystem(createCameraSystem(camera));
 escene.addSystem(createPietinSystem(scene));
 escene.addSystem(createShootableSystem(scene));
+escene.addSystem(createHealthBarSystem(document.querySelector('.health-bar-fg')));
 const spawner = new Entity;
 spawner.addComponent({
   name: 'DonutSpawner',
-  cooldownRange: [2500, 7000],
+  cooldownRange: [2.5e3, 10e3],
   xRange: [-50, 50],
   yRange: [0, 0],
   zRange: [-50, 50],
@@ -80,7 +81,7 @@ tank.addComponent({
   moveSpeed: 0.01,
   fireCooldown: 0.4e3,
   rotY: 0,
-  health: 100,
+  maxHealth: 100,
   damage: 15,
 });
 tank.addComponent({
@@ -93,36 +94,40 @@ tank.addComponent({
   name: 'PlayerTank',
 });
 escene.addEntity(tank);
-const test = new Entity();
-test.addComponent({
+const pietin1 = new Entity();
+pietin1.addComponent({
   name: 'Pietin',
-  aimingRange: 20,
-  firingRange: 15,
+  aimingRange: 30,
+  firingRange: 20,
+  damage: 2,
+  fireCooldown: 0.1e3,
   rotY: 0.4 * TAU,
   health: 25,
 });
-test.addComponent({
+pietin1.addComponent({
   name: 'Position',
   x: -15,
   y: 0,
   z: -20,
 });
-escene.addEntity(test);
-const test2 = new Entity();
-test2.addComponent({
+escene.addEntity(pietin1);
+const pietin2 = new Entity();
+pietin2.addComponent({
   name: 'Pietin',
-  aimingRange: 20,
-  firingRange: 15,
+  aimingRange: 30,
+  firingRange: 20,
+  fireCooldown: 0.1e3,
+  damage: 2,
   rotY: 0,
   health: 25,
 });
-test2.addComponent({
+pietin2.addComponent({
   name: 'Position',
   x: -20,
   y: 0,
-  z: -25,
+  z: -15,
 });
-escene.addEntity(test2);
+escene.addEntity(pietin2);
 
 scene.background = new Color(0x005588);
 const renderer = new WebGLRenderer();

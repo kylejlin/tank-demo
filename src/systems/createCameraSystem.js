@@ -10,7 +10,8 @@ const createCameraSystem = (camera) => {
       const [ent] = entities;
 
       if (!ent) {
-        throw new Error('No player found.');
+        // Player dead
+        return;
       }
 
       camera.position.set(ent.Position.x + 25, ent.Position.y + 25, ent.Position.z + 25);
