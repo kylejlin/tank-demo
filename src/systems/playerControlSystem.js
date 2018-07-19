@@ -44,12 +44,6 @@ const playerControlSystem = new System(
     const dt = escene.globals.deltaTime;
     const dts = dt * 1e-3;
 
-    const {
-      TURN_SPEED,
-      MOVE_SPEED,
-      FIRE_COOLDOWN
-    } = escene.globals.constants;
-
     for (const ent of entities) {
       if (!('currentFireCooldown_' in ent.Tank)) {
         ent.Tank.currentFireCooldown_ = 0;
@@ -58,36 +52,36 @@ const playerControlSystem = new System(
       ent.Tank.currentFireCooldown_ -= dt;
 
       if (keys.LEFT) {
-        ent.Tank.rotY += TURN_SPEED * dt;
+        ent.Tank.rotY += ent.Tank.turnSpeed * dt;
         while (ent.Tank.rotY > TAU) {
           ent.Tank.rotY -= TAU;
         }
       }
       if (keys.RIGHT) {
-        ent.Tank.rotY -= TURN_SPEED * dt;
+        ent.Tank.rotY -= ent.Tank.turnSpeed * dt;
         while (ent.Tank.rotY < 0) {
           ent.Tank.rotY += TAU;
         }
       }
       if (keys.UP) {
-        ent.Tank.x += Math.sin(ent.Tank.rotY) * MOVE_SPEED * dt;
-        ent.Tank.z += Math.cos(ent.Tank.rotY) * MOVE_SPEED * dt;
+        ent.Tank.x += Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Tank.z += Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
       }
       if (keys.DOWN) {
-        ent.Tank.x -= Math.sin(ent.Tank.rotY) * MOVE_SPEED * dt;
-        ent.Tank.z -= Math.cos(ent.Tank.rotY) * MOVE_SPEED * dt;
+        ent.Tank.x -= Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Tank.z -= Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
       }
 
       if (keys.SPACE && ent.Tank.currentFireCooldown_ <= 0) {
-        ent.Tank.currentFireCooldown_ = FIRE_COOLDOWN;
+        ent.Tank.currentFireCooldown_ = ent.Tank.fireCooldown;
 
-        const { x, y, z, rotY } = ent.Tank;
+        const { x, y, z, rotY, damage } = ent.Tank;
         const shot = new Entity();
         shot.addComponent({
           name: 'Shot',
           origin: new Vector3(x + Math.sin(rotY) * 2.3, y + 1.6, z + Math.cos(rotY) * 2.3),
           direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, rotY, 0)),
-          damage: 20, // TODO
+          damage,
         });
         escene.addEntity(shot);
 
@@ -115,7 +109,7 @@ const playerControlSystem = new System(
         escene.addEntity(explosion);
       }
 
-      if (ent.Tank.currentFireCooldown_ > FIRE_COOLDOWN - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
+      if (ent.Tank.currentFireCooldown_ > ent.Tank.fireCooldown - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
         ent.Tank.gunMixer_.update(dts);
         ent.Tank.turretMixer_.update(dts);
       }

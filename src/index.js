@@ -46,21 +46,12 @@ const healthBarFg = document.querySelector('.health-bar-fg');
 
 const TAU = 2 * Math.PI;
 
-const TURN_SPEED = 0.002;
-const MOVE_SPEED = 0.01;
 const SPOT_COLOR = 0xaaaaaa;
-const FIRE_COOLDOWN = 0.4e3;
-const MAX_HEALTH = 100;
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 
 const escene = new ECSScene();
-escene.globals.constants = {
-  TURN_SPEED,
-  MOVE_SPEED,
-  FIRE_COOLDOWN,
-};
 escene.addSystem(createExplosionSystem(scene));
 escene.addSystem(createDonutSystem(scene));
 escene.addSystem(donutSpawnerSystem);
@@ -84,8 +75,12 @@ tank.addComponent({
   x: 0,
   y: 1,
   z: 0,
+  turnSpeed: 0.002,
+  moveSpeed: 0.01,
+  fireCooldown: 0.4e3,
   rotY: 0,
   health: 100,
+  damage: 15,
 });
 tank.addComponent({
   name: 'PlayerTank',
