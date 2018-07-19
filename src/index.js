@@ -33,6 +33,7 @@ import playerControlSystem from './systems/playerControlSystem';
 import shotSystem from './systems/shotSystem';
 import createCameraSystem from './systems/createCameraSystem';
 import createPietinSystem from './systems/createPietinSystem';
+import createShootableSystem from './systems/createShootableSystem';
 
 
 const tankFireSound = new Howl({
@@ -61,22 +62,20 @@ escene.addSystem(playerControlSystem);
 escene.addSystem(shotSystem);
 escene.addSystem(createCameraSystem(camera));
 escene.addSystem(createPietinSystem(scene));
+escene.addSystem(createShootableSystem(scene));
 const spawner = new Entity;
 spawner.addComponent({
   name: 'DonutSpawner',
-  cooldownRange: [1000, 5000],
+  cooldownRange: [2500, 7000],
   xRange: [-50, 50],
   yRange: [0, 0],
   zRange: [-50, 50],
   healthRange: [5, 20],
 });
-//escene.addEntity(spawner);
+escene.addEntity(spawner);
 const tank = new Entity();
 tank.addComponent({
   name: 'Tank',
-  x: 0,
-  y: 1,
-  z: 0,
   turnSpeed: 0.002,
   moveSpeed: 0.01,
   fireCooldown: 0.4e3,
@@ -85,31 +84,43 @@ tank.addComponent({
   damage: 15,
 });
 tank.addComponent({
+  name: 'Position',
+  x: 0,
+  y: 1,
+  z: 0,
+});
+tank.addComponent({
   name: 'PlayerTank',
 });
 escene.addEntity(tank);
 const test = new Entity();
 test.addComponent({
   name: 'Pietin',
-  x: -15,
-  y: 0,
-  z: -20,
   aimingRange: 20,
   firingRange: 15,
   rotY: 0.4 * TAU,
   health: 25,
 });
+test.addComponent({
+  name: 'Position',
+  x: -15,
+  y: 0,
+  z: -20,
+});
 escene.addEntity(test);
 const test2 = new Entity();
 test2.addComponent({
   name: 'Pietin',
-  x: -20,
-  y: 0,
-  z: -25,
   aimingRange: 20,
   firingRange: 15,
   rotY: 0,
   health: 25,
+});
+test2.addComponent({
+  name: 'Position',
+  x: -20,
+  y: 0,
+  z: -25,
 });
 escene.addEntity(test2);
 

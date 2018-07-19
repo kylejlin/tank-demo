@@ -2,7 +2,7 @@ import { System, IndexSpec } from 'indexed-ecs';
 import { Raycaster } from 'three';
 
 const shotSystem = new System(
-  (escene, [{ entities: shotEntities }, { entities: hittableEntities }]) => {
+  (escene, [{ entities: shotEntities }, { entities: shootableEntities }]) => {
     const dt = escene.globals.deltaTime;
     const dts = dt * 1e-3;
 
@@ -10,23 +10,23 @@ const shotSystem = new System(
       let closestDistance = Infinity;
       let closestEnt = null;
 
-      for (const hittableEnt of hittableEntities) {
+      for (const shootableEnt of shootableEntities) {
         const raycaster = new Raycaster();
         raycaster.set(
           shotEnt.Shot.origin,
           shotEnt.Shot.direction
         );
-        const hits = raycaster.intersectObject(hittableEnt.Hittable.scene_, true);
+        const hits = raycaster.intersectObject(shootableEnt.Shootable.scene_, true);
         for (const hit of hits) {
           if (hit.distance < closestDistance) {
             closestDistance = hit.distance;
-            closestEnt = hittableEnt;
+            closestEnt = shootableEnt;
           }
         }
       }
 
       if (closestEnt !== null) {
-        closestEnt.Hittable.health -= shotEnt.Shot.damage;
+        closestEnt.Shootable.health -= shotEnt.Shot.damage;
       }
 
       escene.removeEntity(shotEnt);
@@ -34,7 +34,7 @@ const shotSystem = new System(
   },
   [
     new IndexSpec(['Shot']),
-    new IndexSpec(['Hittable'])
+    new IndexSpec(['Shootable'])
   ]
 );
 

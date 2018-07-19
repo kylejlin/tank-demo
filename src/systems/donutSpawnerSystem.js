@@ -22,10 +22,13 @@ const donutSpawnerSystem = new System(
         const donut = new Entity();
         donut.addComponent({
           name: 'Donut',
+          health: randFloat(minH, maxH),
+        });
+        donut.addComponent({
+          name: 'Position',
           x: randFloat(minX, maxX),
           y: randFloat(minY, maxY),
           z: randFloat(minZ, maxZ),
-          health: randFloat(minH, maxH),
         });
         escene.addEntity(donut);
       }

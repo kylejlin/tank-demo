@@ -1,14 +1,6 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
 import GLTFLoader from 'three-gltf-loader';
 import { Vector3, Group, Object3D } from 'three';
-import { Howl } from 'howler';
-// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
-import exposionSrc from '../audio/longer-explosion.wav';
-
-const explosionSound = new Howl({
-  src: exposionSrc,
-  volume: 5.5,
-});
 
 let pietinScene = null;
 (new GLTFLoader()).load('./models/pietin-gun.glb', (gltf) => {
@@ -47,54 +39,28 @@ const createPietinSystem = (scene) => {
           ent.Pietin.spinnables_ = spinnables;
         }
 
-        if (!ent.Hittable) {
+        if (!ent.Shootable) {
           ent.addComponent({
-            name: 'Hittable',
+            name: 'Shootable',
             health: ent.Pietin.health,
             scene_: ent.Pietin.scene_,
           });
         }
 
-        if (ent.Hittable.health <= 0) {
-          scene.remove(ent.Pietin.scene_);
-          escene.removeEntity(ent);
-
-          const explosion = new Entity();
-          explosion.addComponent({
-            name: 'Explosion',
-            position: new Vector3(ent.Pietin.x, ent.Pietin.y, ent.Pietin.z),
-          	positionRandomness: 1,
-          	velocity: new Vector3(0, 0.1, 0),
-          	velocityRandomness: .9,
-          	color: 0xff8500,
-          	colorRandomness: .1,
-          	turbulence: 0.0,
-          	lifetime: 0.8,
-          	size: 10,
-          	sizeRandomness: 3,
-            spawnRate: 25000,
-            emissionDuration: 0.2,
-          });
-          escene.addEntity(explosion);
-
-          explosionSound.play();
-          continue;
-        }
-
         if (
-          (tankEnt.Tank.x - ent.Pietin.x) ** 2
+          (tankEnt.Position.x - ent.Position.x) ** 2
           +
-          (tankEnt.Tank.y - ent.Pietin.y) ** 2
+          (tankEnt.Position.y - ent.Position.y) ** 2
           < ent.Pietin.aimingRange ** 2
         ) {
           const temp = new Object3D();
-          temp.position.set(ent.Pietin.x, tankEnt.Tank.y, ent.Pietin.z);
-          temp.lookAt(new Vector3(tankEnt.Tank.x, tankEnt.Tank.y, tankEnt.Tank.z));
+          temp.position.set(ent.Position.x, tankEnt.Position.y, ent.Position.z);
+          temp.lookAt(new Vector3(tankEnt.Position.x, tankEnt.Position.y, tankEnt.Position.z));
           const newRotY = (temp.rotation.y + (1.5 * Math.PI));
-          ent.Pietin.rotY = tankEnt.Tank.z > ent.Pietin.z ? newRotY : -newRotY;
+          ent.Pietin.rotY = tankEnt.Position.z > ent.Position.z ? newRotY : -newRotY;
         }
 
-        ent.Pietin.scene_.position.set(ent.Pietin.x, ent.Pietin.y, ent.Pietin.z);
+        ent.Pietin.scene_.position.set(ent.Position.x, ent.Position.y, ent.Position.z);
         ent.Pietin.spinnables_.rotation.y = ent.Pietin.rotY;
       }
     },

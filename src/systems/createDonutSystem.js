@@ -1,14 +1,6 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
 import GLTFLoader from 'three-gltf-loader';
 import { Vector3 } from 'three';
-import { Howl } from 'howler';
-// Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
-import exposionSrc from '../audio/longer-explosion.wav';
-
-const explosionSound = new Howl({
-  src: exposionSrc,
-  volume: 5.5,
-});
 
 let donutScene = null;
 (new GLTFLoader()).load('./models/donut.glb', (gltf) => {
@@ -34,41 +26,15 @@ const createDonutSystem = (scene) => {
           scene.add(clone);
         }
 
-        if (!ent.Hittable) {
+        if (!ent.Shootable) {
           ent.addComponent({
-            name: 'Hittable',
+            name: 'Shootable',
             health: ent.Donut.health,
             scene_: ent.Donut.scene_,
           });
         }
 
-        if (ent.Hittable.health <= 0) {
-          scene.remove(ent.Donut.scene_);
-          escene.removeEntity(ent);
-
-          const explosion = new Entity();
-          explosion.addComponent({
-            name: 'Explosion',
-            position: new Vector3(ent.Donut.x, ent.Donut.y, ent.Donut.z),
-          	positionRandomness: 1,
-          	velocity: new Vector3(0, 0.1, 0),
-          	velocityRandomness: .9,
-          	color: 0xff8500,
-          	colorRandomness: .1,
-          	turbulence: 0.0,
-          	lifetime: 0.8,
-          	size: 10,
-          	sizeRandomness: 3,
-            spawnRate: 25000,
-            emissionDuration: 0.2,
-          });
-          escene.addEntity(explosion);
-
-          explosionSound.play();
-          continue;
-        }
-
-        ent.Donut.scene_.position.set(ent.Donut.x, ent.Donut.y, ent.Donut.z);
+        ent.Donut.scene_.position.set(ent.Position.x, ent.Position.y, ent.Position.z);
       }
     },
     [

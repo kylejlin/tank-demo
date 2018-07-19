@@ -13,11 +13,11 @@ const createCameraSystem = (camera) => {
         throw new Error('No player found.');
       }
 
-      camera.position.set(ent.Tank.x + 25, ent.Tank.y + 25, ent.Tank.z + 25);
-      camera.lookAt(new Vector3(ent.Tank.x, ent.Tank.y, ent.Tank.z));
+      camera.position.set(ent.Position.x + 25, ent.Position.y + 25, ent.Position.z + 25);
+      camera.lookAt(new Vector3(ent.Position.x, ent.Position.y, ent.Position.z));
     },
     [
-      new IndexSpec(['PlayerTank'])
+      new IndexSpec(['PlayerTank', 'Tank', 'Position'])
     ]
   );
 };

@@ -64,18 +64,19 @@ const playerControlSystem = new System(
         }
       }
       if (keys.UP) {
-        ent.Tank.x += Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
-        ent.Tank.z += Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.x += Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.z += Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
       }
       if (keys.DOWN) {
-        ent.Tank.x -= Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
-        ent.Tank.z -= Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.x -= Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.z -= Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
       }
 
       if (keys.SPACE && ent.Tank.currentFireCooldown_ <= 0) {
         ent.Tank.currentFireCooldown_ = ent.Tank.fireCooldown;
 
-        const { x, y, z, rotY, damage } = ent.Tank;
+        const { x, y, z } = ent.Position;
+        const { rotY, damage } = ent.Tank;
         const shot = new Entity();
         shot.addComponent({
           name: 'Shot',
