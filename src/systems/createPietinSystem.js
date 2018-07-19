@@ -123,7 +123,7 @@ const createPietinSystem = (scene) => {
             shot1.addComponent({
               name: 'Shot',
               shooter: ent,
-              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 0.25, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
               direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
               damage: ent.Pietin.damage * 0.5,
             });
@@ -132,7 +132,7 @@ const createPietinSystem = (scene) => {
             shot2.addComponent({
               name: 'Shot',
               shooter: ent,
-              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 0.25, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
               direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
               damage: ent.Pietin.damage * 0.5,
             });
