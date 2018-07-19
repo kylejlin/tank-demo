@@ -28,7 +28,10 @@ import { Entity, Scene as ECSScene } from 'indexed-ecs';
 import createExplosionSystem from './systems/createExplosionSystem';
 import createDonutSystem from './systems/createDonutSystem';
 import donutSpawnerSystem from  './systems/donutSpawnerSystem';
-
+import createTankSystem from './systems/createTankSystem';
+import playerControlSystem from './systems/playerControlSystem';
+import shotSystem from './systems/shotSystem';
+import createCameraSystem from './systems/createCameraSystem';
 
 
 const tankFireSound = new Howl({
@@ -42,6 +45,7 @@ const explosionSound = new Howl({
 const healthBarFg = document.querySelector('.health-bar-fg');
 
 const TAU = 2 * Math.PI;
+
 const TURN_SPEED = 0.002;
 const MOVE_SPEED = 0.01;
 const SPOT_COLOR = 0xaaaaaa;
@@ -49,11 +53,21 @@ const FIRE_COOLDOWN = 0.4e3;
 const MAX_HEALTH = 100;
 
 const scene = new Scene();
+const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 
 const escene = new ECSScene();
+escene.globals.constants = {
+  TURN_SPEED,
+  MOVE_SPEED,
+  FIRE_COOLDOWN,
+};
 escene.addSystem(createExplosionSystem(scene));
 escene.addSystem(createDonutSystem(scene));
 escene.addSystem(donutSpawnerSystem);
+escene.addSystem(createTankSystem(scene));
+escene.addSystem(playerControlSystem);
+escene.addSystem(shotSystem);
+escene.addSystem(createCameraSystem(camera));
 const spawner = new Entity;
 spawner.addComponent({
   name: 'DonutSpawner',
@@ -61,12 +75,24 @@ spawner.addComponent({
   xRange: [-50, 50],
   yRange: [0, 0],
   zRange: [-50, 50],
-  healthRange: [20, 100],
+  healthRange: [5, 20],
 });
 escene.addEntity(spawner);
+const tank = new Entity();
+tank.addComponent({
+  name: 'Tank',
+  x: 0,
+  y: 1,
+  z: 0,
+  rotY: 0,
+  health: 100,
+});
+tank.addComponent({
+  name: 'PlayerTank',
+});
+escene.addEntity(tank);
 
 scene.background = new Color(0x005588);
-const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 const renderer = new WebGLRenderer();
 renderer.physicallyCorrectLights = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -135,171 +161,15 @@ const floor = new Mesh(
 floor.rotation.x -= 0.25 * TAU;
 scene.add(floor);
 
-let tankScene = null;
-let tankAnimations = null;
-let gunMixer = null;
-let turretMixer = null;
-(new GLTFLoader()).load('./models/tank2.glb', (gltf) => {
-  tankScene = gltf.scene;
-  tankAnimations = gltf.animations;
-  const gun = tankScene.children.find(m => m.name === 'Gun');
-  gunMixer = new AnimationMixer(gun);
-  const turret = tankScene.children.find(m => m.name === 'Turret');
-  turretMixer = new AnimationMixer(turret);
-  tankScene.position.y = 1;
-  scene.add(tankScene);
-});
-
-let donutScene = null;
-let donutHasExploded = false;
-(new GLTFLoader()).load('./models/donut.glb', (gltf) => {
-  donutScene = gltf.scene;
-  donutScene.position.set(-20, 0, -30);
-  donutScene.scale.set(2.5, 2.5, 2.5);
-  scene.add(donutScene);
-});
-
-let tick = 1;
-let tickOffset = 1;
-let fireCooldown = 0;
-let hasTankExploded = false;
-let tankHealth = MAX_HEALTH;
-let selfHarmCooldown = 0;
 const update = (dt) => {
   escene.globals.deltaTime = dt;
   escene.update();
 
-  const healthBarVw = 40 * tankHealth / MAX_HEALTH + 'vw';
-  healthBarFg.style.width = healthBarVw;
-  healthBarFg.style.display = tankHealth > 0
-    ? 'block'
-    : 'none';
-
-  if (tankScene) {
-    if (keys.LEFT) {
-      tankScene.rotation.y += TURN_SPEED * dt;
-      while (tankScene.rotation.y > TAU) {
-        tankScene.rotation.y -= TAU;
-      }
-    }
-    if (keys.RIGHT) {
-      tankScene.rotation.y -= TURN_SPEED * dt;
-      while (tankScene.rotation.y < 0) {
-        tankScene.rotation.y += TAU;
-      }
-    }
-    if (keys.UP) {
-      tankScene.position.x += Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
-      tankScene.position.z += Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
-    }
-    if (keys.DOWN) {
-      tankScene.position.x -= Math.sin(tankScene.rotation.y) * MOVE_SPEED * dt;
-      tankScene.position.z -= Math.cos(tankScene.rotation.y) * MOVE_SPEED * dt;
-    }
-
-    if (keys.W && selfHarmCooldown <= 0) {
-      selfHarmCooldown = FIRE_COOLDOWN;
-      tankHealth -= 20;
-    }
-    selfHarmCooldown -= dt;
-
-    fireCooldown -= dt;
-    if (keys.SPACE && fireCooldown <= 0) {
-      fireCooldown = FIRE_COOLDOWN;
-
-      const raycaster = new Raycaster();
-      raycaster.set(
-        tankScene.position.clone().add(new Vector3(Math.sin(tankScene.rotation.y) * 2.3, 1.6, Math.cos(tankScene.rotation.y) * 2.3)),
-        (new Vector3(0, 0, 1)).applyEuler(tankScene.rotation)
-      );
-      const hits = raycaster.intersectObject(donutScene, true);
-      if (hits.length > 0 && !donutHasExploded) {
-        donutHasExploded = true;
-        scene.remove(donutScene);
-
-        const explosion = new Entity();
-        explosion.addComponent({
-          name: 'Explosion',
-          position: donutScene.position.clone(),
-        	positionRandomness: 1,
-        	velocity: new Vector3(0, 0.1, 0),
-        	velocityRandomness: .9,
-        	color: 0xff8500,
-        	colorRandomness: .1,
-        	turbulence: 0.0,
-        	lifetime: 0.8,
-        	size: 10,
-        	sizeRandomness: 3,
-          spawnRate: 25000,
-          emissionDuration: 0.2,
-        });
-        escene.addEntity(explosion);
-
-        explosionSound.play();
-      }
-
-      tankFireSound.play();
-
-      const gunClip = AnimationClip.findByName(tankAnimations, 'GunAction');
-      const gunAction = gunMixer.clipAction(gunClip);
-      gunAction.play();
-      gunMixer.time = 0;
-      const turretClip = AnimationClip.findByName(tankAnimations, 'TurretAction');
-      const turretAction = turretMixer.clipAction(turretClip);
-      turretAction.play();
-      turretMixer.time = 0;
-
-      const explosion = new Entity();
-      const k = (new Vector3(0, 0, 1.45)).applyEuler(tankScene.rotation);
-      explosion.addComponent({
-        name: 'Explosion',
-        position: new Vector3(tankScene.position.x + Math.sin(tankScene.rotation.y) * 2.3, tankScene.position.y + 1.6, tankScene.position.z + Math.cos(tankScene.rotation.y) * 2.3),
-      	positionRandomness: .3,
-      	velocity: k,
-      	velocityRandomness: .0,
-      	color: 0xaa4400,
-      	colorRandomness: .1,
-      	turbulence: .0,
-      	lifetime: 0.2,
-      	size: 5,
-      	sizeRandomness: 1,
-        spawnRate: 2500,
-        emissionDuration: 0.2,
-      });
-      escene.addEntity(explosion);
-    }
-    if (fireCooldown > FIRE_COOLDOWN - AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3) {
-      gunMixer.update(dt * 0.001);
-      turretMixer.update(dt * 0.001);
-    }
-    camera.position.set(tankScene.position.x + 25, tankScene.position.y + 25, tankScene.position.z + 25);
-    camera.lookAt(tankScene.position);
-  }
-
-  if (!hasTankExploded && tankHealth <= 0) {
-    scene.remove(tankScene);
-
-    const explosion = new Entity();
-    explosion.addComponent({
-      name: 'Explosion',
-      position: new Vector3(tankScene.position.x, tankScene.position.y, tankScene.position.z),
-    	positionRandomness: 1,
-    	velocity: new Vector3(0, 0.1, 0),
-    	velocityRandomness: .9,
-    	color: 0xff8500,
-    	colorRandomness: .1,
-    	turbulence: 0.0,
-    	lifetime: 0.8,
-    	size: 10,
-    	sizeRandomness: 3,
-      spawnRate: 25000,
-      emissionDuration: 0.2,
-    });
-    escene.addEntity(explosion);
-
-    explosionSound.play();
-    hasTankExploded = true;
-  }
+  // const healthBarVw = 40 * tankHealth / MAX_HEALTH + 'vw';
+  // healthBarFg.style.width = healthBarVw;
+  // healthBarFg.style.display = tankHealth > 0
+  //   ? 'block'
+  //   : 'none';
 };
 
 let then = Date.now();
