@@ -11,6 +11,10 @@ const shotSystem = new System(
       let closestEnt = null;
 
       for (const shootableEnt of shootableEntities) {
+        if (shootableEnt === shotEnt.Shot.shooter) {
+          continue;
+        }
+        
         const raycaster = new Raycaster();
         raycaster.set(
           shotEnt.Shot.origin,

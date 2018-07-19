@@ -80,6 +80,7 @@ const playerControlSystem = new System(
         const shot = new Entity();
         shot.addComponent({
           name: 'Shot',
+          shooter: ent,
           origin: new Vector3(x + Math.sin(rotY) * 2.3, y + 1.6, z + Math.cos(rotY) * 2.3),
           direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, rotY, 0)),
           damage,
