@@ -12,7 +12,6 @@ const hudSystem = new System(
     if (!ent) {
       // Player is dead
       healthBarFg.style.display = 'none';
-      lightCannonFg.style.display = 'none';
       return;
     }
 
@@ -21,7 +20,6 @@ const hudSystem = new System(
     healthBarFg.style.display = 'block';
 
     lightCannonFg.innerHTML = ent.Tank.ammo;
-    lightCannonFg.style.display = 'block';
   },
   [
     new IndexSpec(['Tank', 'PlayerTank', 'Shootable'])
