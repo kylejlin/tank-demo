@@ -26,6 +26,27 @@ const createDonutSystem = (scene) => {
           scene.add(clone);
         }
 
+        if (!ent.LootDropper) {
+          const fourPack = new Entity();
+          fourPack.addComponent({
+            name: 'FourPack',
+            rotY: 0,
+          });
+          fourPack.addComponent({
+            name: 'Position',
+            x: ent.Position.x,
+            y: ent.Position.y,
+            z: ent.Position.z,
+          });
+          const drop = Math.random() < 0.50
+            ? fourPack
+            : null;
+          ent.addComponent({
+            name: 'LootDropper',
+            drop,
+          });
+        }
+
         if (!ent.Shootable) {
           ent.addComponent({
             name: 'Shootable',

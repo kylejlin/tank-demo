@@ -35,6 +35,8 @@ import createCameraSystem from './systems/createCameraSystem';
 import createPietinSystem from './systems/createPietinSystem';
 import createShootableSystem from './systems/createShootableSystem';
 import hudSystem from './systems/hudSystem';
+import createFourPackSystem from './systems/createFourPackSystem';
+import createLootSystem from './systems/createLootSystem';
 
 const tankFireSound = new Howl({
   src: tankFireSrc,
@@ -64,6 +66,8 @@ escene.addSystem(createCameraSystem(camera));
 escene.addSystem(createPietinSystem(scene));
 escene.addSystem(createShootableSystem(scene));
 escene.addSystem(hudSystem);
+escene.addSystem(createFourPackSystem(scene));
+escene.addSystem(createLootSystem(scene));
 const spawner = new Entity;
 spawner.addComponent({
   name: 'DonutSpawner',
@@ -73,7 +77,7 @@ spawner.addComponent({
   zRange: [-50, 50],
   healthRange: [5, 20],
 });
-//escene.addEntity(spawner);
+escene.addEntity(spawner);
 const tank = new Entity();
 tank.addComponent({
   name: 'Tank',

@@ -39,6 +39,10 @@ const createShootableSystem = (scene) => {
 
           explosionSound.play();
 
+          if (ent.LootDropper && ent.LootDropper.drop !== null) {
+            escene.addEntity(ent.LootDropper.drop);
+          }
+
           scene.remove(ent.Shootable.scene_);
           escene.removeEntity(ent);
         }
