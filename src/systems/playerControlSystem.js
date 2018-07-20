@@ -72,8 +72,9 @@ const playerControlSystem = new System(
         ent.Position.z -= Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
       }
 
-      if (keys.SPACE && ent.Tank.currentFireCooldown_ <= 0) {
+      if (keys.SPACE && ent.Tank.currentFireCooldown_ <= 0 && ent.Tank.ammo > 0) {
         ent.Tank.currentFireCooldown_ = ent.Tank.fireCooldown;
+        ent.Tank.ammo -= 1;
 
         const { x, y, z } = ent.Position;
         const { rotY, damage } = ent.Tank;
