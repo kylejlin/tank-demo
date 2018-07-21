@@ -1,5 +1,15 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
 import { Vector3, Raycaster, Euler } from 'three';
+import { Howl } from 'howler';
+// Trimmed from https://www.youtube.com/watch?v=Igym4-KVFPc
+import pickUpAmmoSrc from '../audio/pick-up-ammo.wav';
+
+const pickUpSounds = {
+  ammo: new Howl({
+    src: pickUpAmmoSrc,
+    volume: 20,
+  }),
+};
 
 const createLootSystem = (scene) => {
   return new System(
@@ -25,6 +35,11 @@ const createLootSystem = (scene) => {
             for (const key in ent.Loot.contents) {
               tankEnt.Tank[key] += ent.Loot.contents[key];
             }
+
+            if (pickUpSounds[ent.Loot.pickUpSound]) {
+              pickUpSounds[ent.Loot.pickUpSound].play();
+            }
+
             scene.remove(ent.Loot.scene_);
             escene.removeEntity(ent);
             break;

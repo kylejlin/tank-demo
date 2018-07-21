@@ -23,7 +23,7 @@ const createFourPackSystem = (scene) => {
           ent.FourPack.scene_ = clone;
           scene.add(clone);
         }
-        
+
         if (!ent.Loot) {
           ent.addComponent({
             name: 'Loot',
@@ -31,6 +31,7 @@ const createFourPackSystem = (scene) => {
             contents: {
               ammo: 4,
             },
+            pickUpSound: 'ammo',
           });
         }
 
