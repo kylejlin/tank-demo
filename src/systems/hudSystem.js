@@ -1,4 +1,10 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
+import lightCannonThumbnailSrc from '../images/light-cannon-shell-four-pack-thumbnail.png';
+
+const lightCannonBg = document.querySelector('.light-cannon-bg');
+
+lightCannonBg.style.backgroundImage = 'url("/' + lightCannonThumbnailSrc + '")';
+console.log('he', lightCannonBg.style.backgroundImage);
 
 const healthBarFg = document.querySelector('.health-bar-fg');
 const lightCannonFg = document.querySelector('.light-cannon-fg');
