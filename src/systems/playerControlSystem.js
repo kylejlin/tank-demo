@@ -93,12 +93,12 @@ const playerControlSystem = new System(
         ent.Tank.gunMixer_.time = 0;
         ent.Tank.turretMixer_.time = 0;
 
-        const explosion = new Entity();
-        explosion.addComponent({
-          name: 'Explosion',
-          position: new Vector3(x + Math.sin(rotY) * 2.3, y + 1.6, z + Math.cos(rotY) * 2.3),
+        const muzzleFlash = new Entity();
+        muzzleFlash.addComponent({
+          name: 'TankMuzzleFlash',
+          position: new Vector3(0, 0, 0),
         	positionRandomness: .3,
-        	velocity: (new Vector3(0, 0, 1.45)).applyEuler(new Euler(0, rotY, 0)),
+        	velocity: new Vector3(0, 0, 1.45),
         	velocityRandomness: .0,
         	color: 0xaa4400,
         	colorRandomness: .1,
@@ -109,7 +109,7 @@ const playerControlSystem = new System(
           spawnRate: 2500,
           emissionDuration: 0.2,
         });
-        escene.addEntity(explosion);
+        escene.addEntity(muzzleFlash);
       }
 
       if (ent.Tank.currentFireCooldown_ > ent.Tank.fireCooldown - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
