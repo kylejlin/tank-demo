@@ -8,12 +8,6 @@ const createTankMuzzleFlashSystem = (scene) => {
       const dt = escene.globals.deltaTime;
       const dts = dt * 1e-3;
 
-      const [tankEnt] = tankEntities;
-      if (!tankEnt) {
-        // Player is dead.
-        return;
-      }
-
       if (!escene.globals.tankMuzzleFlashParticleSystem) {
         escene.globals.tankMuzzleFlashParticleSystem = new GPUParticleSystem();
         escene.globals.tankMuzzleFlashParticleSystemTimeInSeconds = 0;
@@ -22,6 +16,13 @@ const createTankMuzzleFlashSystem = (scene) => {
 
       escene.globals.tankMuzzleFlashParticleSystemTimeInSeconds += dts;
       escene.globals.tankMuzzleFlashParticleSystem.update(escene.globals.tankMuzzleFlashParticleSystemTimeInSeconds);
+
+      const [tankEnt] = tankEntities;
+      if (!tankEnt) {
+        // Player is dead.
+        return;
+      }
+
       escene.globals.tankMuzzleFlashParticleSystem.position.copy(
         new Vector3(tankEnt.Position.x + Math.sin(tankEnt.Tank.rotY) * 2.3, tankEnt.Position.y + 1.6, tankEnt.Position.z + Math.cos(tankEnt.Tank.rotY) * 2.3)
       );
