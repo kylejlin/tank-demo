@@ -22,14 +22,27 @@ const createLootSystem = (scene) => {
         // Player is dead.
         return;
       }
-      const raycaster = new Raycaster();
-      raycaster.set(
-        new Vector3(tankEnt.Position.x + Math.sin(tankEnt.Tank.rotY) * 0, tankEnt.Position.y + 0.5, tankEnt.Position.z + Math.cos(tankEnt.Tank.rotY) * 0),
+      const raycaster1 = new Raycaster();
+      raycaster1.set(
+        new Vector3(tankEnt.Position.x, tankEnt.Position.y, tankEnt.Position.z).add(new Vector3(0, 0.5, 0).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))),
+        (new Vector3(0, 0, 1)).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))
+      );
+      const raycaster2 = new Raycaster();
+      raycaster2.set(
+        new Vector3(tankEnt.Position.x, tankEnt.Position.y, tankEnt.Position.z).add(new Vector3(-1, 0.5, 0).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))),
+        (new Vector3(0, 0, 1)).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))
+      );
+      const raycaster3 = new Raycaster();
+      raycaster3.set(
+        new Vector3(tankEnt.Position.x, tankEnt.Position.y, tankEnt.Position.z).add(new Vector3(1, 0.5, 0).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))),
         (new Vector3(0, 0, 1)).applyEuler(new Euler(0, tankEnt.Tank.rotY, 0))
       );
 
       for (const ent of entities) {
-        const hits = raycaster.intersectObject(ent.Loot.scene_, true);
+        const hits1 = raycaster1.intersectObject(ent.Loot.scene_, true);
+        const hits2 = raycaster2.intersectObject(ent.Loot.scene_, true);
+        const hits3 = raycaster3.intersectObject(ent.Loot.scene_, true);
+        const hits = hits1.concat(hits2).concat(hits3);
         for (const hit of hits) {
           if (hit.distance <= 2.3) {
             for (const key in ent.Loot.contents) {
