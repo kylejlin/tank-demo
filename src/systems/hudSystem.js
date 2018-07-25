@@ -4,7 +4,6 @@ import lightCannonThumbnailSrc from '../images/light-cannon-shell-four-pack-thum
 const lightCannonBg = document.querySelector('.light-cannon-bg');
 
 lightCannonBg.style.backgroundImage = 'url("/' + lightCannonThumbnailSrc + '")';
-console.log('he', lightCannonBg.style.backgroundImage);
 
 const healthBarFg = document.querySelector('.health-bar-fg');
 const lightCannonFg = document.querySelector('.light-cannon-fg');
