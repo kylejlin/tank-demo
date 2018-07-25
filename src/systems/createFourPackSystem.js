@@ -9,10 +9,6 @@ const createFourPackSystem = (scene) => {
       const dt = escene.globals.deltaTime;
       const dts = dt * 1e-3;
 
-      if (fourPackScene === null) {
-        return;
-      }
-
       for (const ent of entities) {
         if (!ent.FourPack.scene_) {
           const clone = fourPackScene.clone();

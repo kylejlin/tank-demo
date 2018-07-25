@@ -18,10 +18,6 @@ const createPietinSystem = (scene) => {
       const dt = escene.globals.deltaTime;
       const dts = dt * 1e-3;
 
-      if (pietinScene === null) {
-        return;
-      }
-
       const [tankEnt] = tankEntities;
       if (!tankEnt) {
         // Player dead

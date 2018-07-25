@@ -11,10 +11,6 @@ const createTankSystem = (scene) => {
       const dt = escene.globals.deltaTime;
       const dts = dt * 1e-3;
 
-      if (tankScene === null) {
-        return;
-      }
-
       for (const ent of entities) {
         if (!ent.Tank.scene_) {
           const clone = tankScene.clone();
