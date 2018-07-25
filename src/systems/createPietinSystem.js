@@ -1,5 +1,5 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
-import GLTFLoader from 'three-gltf-loader';
+import assets from '../assets';
 import { Vector3, Euler, Group, Object3D } from 'three';
 import { Howl } from 'howler';
 // http://soundbible.com/1919-Shotgun-Blast.html
@@ -10,13 +10,9 @@ const tankFireSound = new Howl({
   volume: 0.35,
 });
 
-let pietinScene = null;
-(new GLTFLoader()).load('./models/pietin-gun.glb', (gltf) => {
-  pietinScene = gltf.scene;
-  pietinScene.scale.set(1.8, 1.8, 1.8);
-});
-
 const createPietinSystem = (scene) => {
+  const { pietinScene } = assets;
+
   return new System(
     (escene, [{ entities }, { entities: tankEntities }]) => {
       const dt = escene.globals.deltaTime;

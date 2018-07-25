@@ -1,13 +1,9 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
-import GLTFLoader from 'three-gltf-loader';
-
-let fourPackScene = null;
-(new GLTFLoader()).load('./models/light-cannon-shell-four-pack.glb', (gltf) => {
-  fourPackScene = gltf.scene;
-  fourPackScene.scale.set(.75,.75,.75);
-});
+import assets from '../assets';
 
 const createFourPackSystem = (scene) => {
+  const { fourPackScene } = assets;
+
   return new System(
     (escene, [{ entities }]) => {
       const dt = escene.globals.deltaTime;

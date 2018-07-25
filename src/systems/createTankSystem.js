@@ -1,15 +1,11 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
-import GLTFLoader from 'three-gltf-loader';
+import assets from '../assets';
 import { AnimationClip, AnimationMixer, Vector3 } from 'three';
 
-let tankScene = null;
-let tankAnimations = null;
-(new GLTFLoader()).load('./models/tank2.glb', (gltf) => {
-  tankScene = gltf.scene;
-  tankAnimations = gltf.animations;
-});
-
 const createTankSystem = (scene) => {
+  const { tankScene } = assets;
+  const { tankAnimations } = assets;
+
   return new System(
     (escene, [{ entities }]) => {
       const dt = escene.globals.deltaTime;

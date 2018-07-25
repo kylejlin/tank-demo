@@ -1,23 +1,14 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
-import GLTFLoader from 'three-gltf-loader';
 import { Vector3 } from 'three';
-
-let donutScene = null;
-(new GLTFLoader()).load('./models/donut.glb', (gltf) => {
-  donutScene = gltf.scene;
-  donutScene.position.set(-20, 0, -30);
-  donutScene.scale.set(2.5, 2.5, 2.5);
-});
+import assets from '../assets';
 
 const createDonutSystem = (scene) => {
+  const { donutScene } = assets;
+
   return new System(
     (escene, [{ entities }]) => {
       const dt = escene.globals.deltaTime;
       const dts = dt * 1e-3;
-
-      if (donutScene === null) {
-        return;
-      }
 
       for (const ent of entities) {
         if (!ent.Donut.scene_) {
