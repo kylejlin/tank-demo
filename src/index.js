@@ -31,15 +31,17 @@ import { Entity, Scene as ECSScene } from 'indexed-ecs';
 import createPietin from './creators/createPietin';
 import createTank from './creators/createTank';
 
+import createPendingRemovalSystem from './systems/createPendingRemovalSystem';
+
 import createExplosionSystem from './systems/createExplosionSystem';
 import donutSpawnerSystem from  './systems/donutSpawnerSystem';
 import playerControlSystem from './systems/playerControlSystem';
 import shotSystem from './systems/shotSystem';
 import createCameraSystem from './systems/createCameraSystem';
-import createPietinSystem from './systems/createPietinSystem';
-import createShootableSystem from './systems/createShootableSystem';
+import pietinSystem from './systems/pietinSystem';
+import shootableSystem from './systems/shootableSystem';
 import hudSystem from './systems/hudSystem';
-import createLootSystem from './systems/createLootSystem';
+import lootSystem from './systems/lootSystem';
 import createTankMuzzleFlashSystem from './systems/createTankMuzzleFlashSystem';
 import boundarySystem from './systems/boundarySystem';
 import createThreeSceneSystem from './systems/createThreeSceneSystem';
@@ -69,13 +71,15 @@ waitForAssetsToLoad.then(() => {
   escene.addSystem(playerControlSystem);
   escene.addSystem(shotSystem);
   escene.addSystem(createCameraSystem(camera));
-  escene.addSystem(createPietinSystem(scene));
-  escene.addSystem(createShootableSystem(scene));
+  escene.addSystem(pietinSystem);
+  escene.addSystem(shootableSystem);
   escene.addSystem(hudSystem);
-  escene.addSystem(createLootSystem(scene));
+  escene.addSystem(lootSystem);
   escene.addSystem(createTankMuzzleFlashSystem(scene));
   escene.addSystem(boundarySystem);
   escene.addSystem(createThreeSceneSystem(scene));
+
+  escene.addSystem(createPendingRemovalSystem(scene));
 
   const spawner = new Entity({
     DonutSpawner: {
