@@ -19,17 +19,20 @@ import {
   Raycaster,
 } from 'three';
 import { waitForAssetsToLoad } from './assets';
-import GLTFLoader from 'three-gltf-loader';
+
 // http://soundbible.com/1919-Shotgun-Blast.html
 import tankFireSrc from './audio/tank-fire.mp3';
 // Modified from http://soundbible.com/2021-Atchisson-Assault-Shotgun.html
 import exposionSrc from './audio/longer-explosion.wav';
 import { Howl } from 'howler';
+
 import { Entity, Scene as ECSScene } from 'indexed-ecs';
+
+import createPietin from './creators/createPietin';
+import createTank from './creators/createTank';
+
 import createExplosionSystem from './systems/createExplosionSystem';
-import createDonutSystem from './systems/createDonutSystem';
 import donutSpawnerSystem from  './systems/donutSpawnerSystem';
-import createTankSystem from './systems/createTankSystem';
 import playerControlSystem from './systems/playerControlSystem';
 import shotSystem from './systems/shotSystem';
 import createCameraSystem from './systems/createCameraSystem';
@@ -40,6 +43,7 @@ import createFourPackSystem from './systems/createFourPackSystem';
 import createLootSystem from './systems/createLootSystem';
 import createTankMuzzleFlashSystem from './systems/createTankMuzzleFlashSystem';
 import boundarySystem from './systems/boundarySystem';
+import createThreeSceneSystem from './systems/createThreeSceneSystem';
 
 const tankFireSound = new Howl({
   src: tankFireSrc,
@@ -62,9 +66,7 @@ const escene = new ECSScene();
 
 waitForAssetsToLoad.then(() => {
   escene.addSystem(createExplosionSystem(scene));
-  escene.addSystem(createDonutSystem(scene));
   escene.addSystem(donutSpawnerSystem);
-  escene.addSystem(createTankSystem(scene));
   escene.addSystem(playerControlSystem);
   escene.addSystem(shotSystem);
   escene.addSystem(createCameraSystem(camera));
@@ -75,70 +77,59 @@ waitForAssetsToLoad.then(() => {
   escene.addSystem(createLootSystem(scene));
   escene.addSystem(createTankMuzzleFlashSystem(scene));
   escene.addSystem(boundarySystem);
+  escene.addSystem(createThreeSceneSystem(scene));
 
-  const spawner = new Entity;
-  spawner.addComponent({
-    name: 'DonutSpawner',
-    cooldownRange: [2.5e3, 10e3],
-    xRange: [-50, 50],
-    yRange: [0, 0],
-    zRange: [-50, 50],
-    healthRange: [5, 20],
+  const spawner = new Entity({
+    DonutSpawner: {
+      cooldownRange: [2.5e3, 10e3],
+      xRange: [-50, 50],
+      yRange: [0, 0],
+      zRange: [-50, 50],
+      healthRange: [5, 20],
+    },
   });
   escene.addEntity(spawner);
-  const tank = new Entity();
-  tank.addComponent({
-    name: 'Tank',
+  const tank = createTank({
+    position: {
+      x: 0,
+      y: 1,
+      z: 0,
+    },
+    maxHealth: 100,
     turnSpeed: 0.002,
     moveSpeed: 0.01,
     fireCooldown: 0.4e3,
-    rotY: 0,
-    maxHealth: 100,
     damage: 15,
     ammo: 25,
-  });
-  tank.addComponent({
-    name: 'Position',
-    x: 0,
-    y: 1,
-    z: 0,
   });
   tank.addComponent({
     name: 'PlayerTank',
   });
   escene.addEntity(tank);
-  const pietin1 = new Entity();
-  pietin1.addComponent({
-    name: 'Pietin',
+  const pietin1 = createPietin({
+    position: {
+      x: -15,
+      y: 0,
+      z: -20,
+    },
+    health: 25,
     aimingRange: 30,
     firingRange: 20,
     damage: 2,
     fireCooldown: 0.1e3,
-    rotY: 0.4 * TAU,
-    health: 25,
-  });
-  pietin1.addComponent({
-    name: 'Position',
-    x: -15,
-    y: 0,
-    z: -20,
   });
   escene.addEntity(pietin1);
-  const pietin2 = new Entity();
-  pietin2.addComponent({
-    name: 'Pietin',
+  const pietin2 = createPietin({
+    position: {
+      x: -20,
+      y: 0,
+      z: -15,
+    },
+    health: 25,
     aimingRange: 30,
     firingRange: 20,
     fireCooldown: 0.1e3,
     damage: 2,
-    rotY: 0,
-    health: 25,
-  });
-  pietin2.addComponent({
-    name: 'Position',
-    x: -20,
-    y: 0,
-    z: -15,
   });
   escene.addEntity(pietin2);
 

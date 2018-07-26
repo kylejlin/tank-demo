@@ -24,9 +24,9 @@ const createTankMuzzleFlashSystem = (scene) => {
       }
 
       escene.globals.tankMuzzleFlashParticleSystem.position.copy(
-        new Vector3(tankEnt.Position.x + Math.sin(tankEnt.Tank.rotY) * 2.3, tankEnt.Position.y + 1.6, tankEnt.Position.z + Math.cos(tankEnt.Tank.rotY) * 2.3)
+        new Vector3(tankEnt.Position.x + Math.sin(tankEnt.Rotation.y) * 2.3, tankEnt.Position.y + 1.6, tankEnt.Position.z + Math.cos(tankEnt.Rotation.y) * 2.3)
       );
-      escene.globals.tankMuzzleFlashParticleSystem.rotation.y = tankEnt.Tank.rotY;
+      escene.globals.tankMuzzleFlashParticleSystem.rotation.y = tankEnt.Rotation.y;
 
       for (const ent of entities) {
         if (ent.TankMuzzleFlash.emissionDuration > 0) {

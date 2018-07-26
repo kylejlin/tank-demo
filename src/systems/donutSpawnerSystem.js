@@ -1,5 +1,6 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
 import { randFloat } from './helpers/rand';
+import createDonut from '../creators/createDonut';
 
 const donutSpawnerSystem = new System(
   (escene, [{ entities }]) => {
@@ -19,18 +20,15 @@ const donutSpawnerSystem = new System(
         const [minZ, maxZ] = ent.DonutSpawner.zRange;
         const [minH, maxH] = ent.DonutSpawner.healthRange;
         ent.DonutSpawner.currentCooldown_ = randFloat(minCd, maxCd);
-        const donut = new Entity();
-        donut.addComponent({
-          name: 'Donut',
+
+        escene.addEntity(createDonut({
           health: randFloat(minH, maxH),
-        });
-        donut.addComponent({
-          name: 'Position',
-          x: randFloat(minX, maxX),
-          y: randFloat(minY, maxY),
-          z: randFloat(minZ, maxZ),
-        });
-        escene.addEntity(donut);
+          position: {
+            x: randFloat(minX, maxX),
+            y: randFloat(minY, maxY),
+            z: randFloat(minZ, maxZ),
+          },
+        }));
       }
     }
   },

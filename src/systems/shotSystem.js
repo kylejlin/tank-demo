@@ -20,7 +20,7 @@ const shotSystem = new System(
           shotEnt.Shot.origin,
           shotEnt.Shot.direction
         );
-        const hits = raycaster.intersectObject(shootableEnt.Shootable.scene_, true);
+        const hits = raycaster.intersectObject(shootableEnt.ThreeScene.scene, true);
         for (const hit of hits) {
           if (hit.distance < closestHit.distance) {
             closestHit = hit;
@@ -55,7 +55,7 @@ const shotSystem = new System(
   },
   [
     new IndexSpec(['Shot']),
-    new IndexSpec(['Shootable'])
+    new IndexSpec(['Shootable', 'ThreeScene'])
   ]
 );
 

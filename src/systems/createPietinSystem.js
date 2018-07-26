@@ -25,34 +25,7 @@ const createPietinSystem = (scene) => {
       }
 
       for (const ent of entities) {
-        if (!ent.Pietin.scene_) {
-          const clone = pietinScene.clone();
-          const spinnables = new Group();
-          clone.children
-            .filter(m => ['Pietin', 'GunBody', 'Barrel1', 'Barrel2'].includes(m.name))
-            .forEach((mesh) => {
-              spinnables.add(mesh);
-              clone.remove(mesh);
-            });
-          clone.add(spinnables);
-          scene.add(clone);
-          ent.Pietin.scene_ = clone;
-          ent.Pietin.spinnables_ = spinnables;
-        }
-
-        if (!ent.Shootable) {
-          ent.addComponent({
-            name: 'Shootable',
-            health: ent.Pietin.health,
-            scene_: ent.Pietin.scene_,
-          });
-        }
-
-        if (!('currentFireCooldown_' in ent.Pietin)) {
-          ent.Pietin.currentFireCooldown_ = 0;
-        }
-
-        ent.Pietin.currentFireCooldown_ -= dt;
+        ent.Pietin.currentFireCooldown -= dt;
 
         if (
           (tankEnt.Position.x - ent.Position.x) ** 2
@@ -71,9 +44,9 @@ const createPietinSystem = (scene) => {
             +
             (tankEnt.Position.z - ent.Position.z) ** 2
             < ent.Pietin.firingRange ** 2)
-            && ent.Pietin.currentFireCooldown_ <= 0
+            && ent.Pietin.currentFireCooldown <= 0
           ) {
-            ent.Pietin.currentFireCooldown_ = ent.Pietin.fireCooldown;
+            ent.Pietin.currentFireCooldown = ent.Pietin.fireCooldown;
 
             const explRotY = ent.Pietin.rotY + 0.5 * Math.PI;
             const explosion1 = new Entity();
@@ -134,12 +107,11 @@ const createPietinSystem = (scene) => {
           }
         }
 
-        ent.Pietin.scene_.position.set(ent.Position.x, ent.Position.y, ent.Position.z);
-        ent.Pietin.spinnables_.rotation.y = ent.Pietin.rotY;
+        ent.Pietin.spinnables.rotation.y = ent.Pietin.rotY;
       }
     },
     [
-      new IndexSpec(['Pietin']),
+      new IndexSpec(['Pietin', 'Position']),
       new IndexSpec(['Tank', 'PlayerTank'])
     ]
   )

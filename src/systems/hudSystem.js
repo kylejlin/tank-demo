@@ -20,7 +20,7 @@ const hudSystem = new System(
       return;
     }
 
-    const healthRatio = ent.Shootable.health / ent.Shootable.maxHealth;
+    const healthRatio = ent.Shootable.health / ent.Tank.maxHealth;
     healthBarFg.style.width = 40 * healthRatio + 'vw';
     healthBarFg.style.display = 'block';
 

@@ -43,13 +43,13 @@ const createShootableSystem = (scene) => {
             escene.addEntity(ent.LootDropper.drop);
           }
 
-          scene.remove(ent.Shootable.scene_);
+          scene.remove(ent.ThreeScene.scene);
           escene.removeEntity(ent);
         }
       }
     },
     [
-      new IndexSpec(['Shootable', 'Position'])
+      new IndexSpec(['Shootable', 'Position', 'ThreeScene'])
     ]
   );
 };

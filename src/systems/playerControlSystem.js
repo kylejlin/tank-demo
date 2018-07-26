@@ -1,5 +1,5 @@
 import { System, IndexSpec, Entity } from 'indexed-ecs';
-import { Vector3, Euler, AnimationClip } from 'three';
+import { Vector3, Euler } from 'three';
 import { Howl } from 'howler';
 // http://soundbible.com/1919-Shotgun-Blast.html
 import tankFireSrc from '../audio/tank-fire.mp3';
@@ -45,39 +45,36 @@ const playerControlSystem = new System(
     const dts = dt * 1e-3;
 
     for (const ent of entities) {
-      if (!('currentFireCooldown_' in ent.Tank)) {
-        ent.Tank.currentFireCooldown_ = 0;
-      }
-
-      ent.Tank.currentFireCooldown_ -= dt;
+      ent.Tank.currentFireCooldown -= dt;
 
       if (keys.LEFT) {
-        ent.Tank.rotY += ent.Tank.turnSpeed * dt;
-        while (ent.Tank.rotY > TAU) {
-          ent.Tank.rotY -= TAU;
+        ent.Rotation.y += ent.Tank.turnSpeed * dt;
+        while (ent.Rotation.y > TAU) {
+          ent.Rotation.y -= TAU;
         }
       }
       if (keys.RIGHT) {
-        ent.Tank.rotY -= ent.Tank.turnSpeed * dt;
-        while (ent.Tank.rotY < 0) {
-          ent.Tank.rotY += TAU;
+        ent.Rotation.y -= ent.Tank.turnSpeed * dt;
+        while (ent.Rotation.y < 0) {
+          ent.Rotation.y += TAU;
         }
       }
       if (keys.UP) {
-        ent.Position.x += Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
-        ent.Position.z += Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.x += Math.sin(ent.Rotation.y) * ent.Tank.moveSpeed * dt;
+        ent.Position.z += Math.cos(ent.Rotation.y) * ent.Tank.moveSpeed * dt;
       }
       if (keys.DOWN) {
-        ent.Position.x -= Math.sin(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
-        ent.Position.z -= Math.cos(ent.Tank.rotY) * ent.Tank.moveSpeed * dt;
+        ent.Position.x -= Math.sin(ent.Rotation.y) * ent.Tank.moveSpeed * dt;
+        ent.Position.z -= Math.cos(ent.Rotation.y) * ent.Tank.moveSpeed * dt;
       }
 
-      if (keys.SPACE && ent.Tank.currentFireCooldown_ <= 0 && ent.Tank.ammo > 0) {
-        ent.Tank.currentFireCooldown_ = ent.Tank.fireCooldown;
+      if (keys.SPACE && ent.Tank.currentFireCooldown <= 0 && ent.Tank.ammo > 0) {
+        ent.Tank.currentFireCooldown = ent.Tank.fireCooldown;
         ent.Tank.ammo -= 1;
 
         const { x, y, z } = ent.Position;
-        const { rotY, damage } = ent.Tank;
+        const rotY = ent.Rotation.y;
+        const { damage } = ent.Tank;
         const shot = new Entity();
         shot.addComponent({
           name: 'Shot',
@@ -90,8 +87,8 @@ const playerControlSystem = new System(
 
         tankFireSound.play();
 
-        ent.Tank.gunMixer_.time = 0;
-        ent.Tank.turretMixer_.time = 0;
+        ent.Tank.gunMixer.time = 0;
+        ent.Tank.turretMixer.time = 0;
 
         const muzzleFlash = new Entity();
         muzzleFlash.addComponent({
@@ -112,9 +109,9 @@ const playerControlSystem = new System(
         escene.addEntity(muzzleFlash);
       }
 
-      if (ent.Tank.currentFireCooldown_ > ent.Tank.fireCooldown - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
-        ent.Tank.gunMixer_.update(dts);
-        ent.Tank.turretMixer_.update(dts);
+      if (ent.Tank.currentFireCooldown > ent.Tank.fireCooldown - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
+        ent.Tank.gunMixer.update(dts);
+        ent.Tank.turretMixer.update(dts);
       }
     }
   },
