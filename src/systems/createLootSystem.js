@@ -39,6 +39,8 @@ const createLootSystem = (scene) => {
       );
 
       for (const ent of entities) {
+        ent.Rotation.y += 0.002 * dt;
+
         const hits1 = raycaster1.intersectObject(ent.ThreeScene.scene, true);
         const hits2 = raycaster2.intersectObject(ent.ThreeScene.scene, true);
         const hits3 = raycaster3.intersectObject(ent.ThreeScene.scene, true);
@@ -61,7 +63,7 @@ const createLootSystem = (scene) => {
       }
     },
     [
-      new IndexSpec(['Loot']),
+      new IndexSpec(['Loot', 'Rotation']),
       new IndexSpec(['PlayerTank', 'Tank'])
     ]
   )

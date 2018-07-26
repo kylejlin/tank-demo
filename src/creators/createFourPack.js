@@ -7,8 +7,6 @@ const createFourPack = ({
   const { fourPackScene } = assets;
 
   return new Entity({
-    FourPack: {},
-
     ThreeScene: {
       scene: fourPackScene.clone(),
       isAdded: false,

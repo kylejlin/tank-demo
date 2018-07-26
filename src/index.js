@@ -39,7 +39,6 @@ import createCameraSystem from './systems/createCameraSystem';
 import createPietinSystem from './systems/createPietinSystem';
 import createShootableSystem from './systems/createShootableSystem';
 import hudSystem from './systems/hudSystem';
-import createFourPackSystem from './systems/createFourPackSystem';
 import createLootSystem from './systems/createLootSystem';
 import createTankMuzzleFlashSystem from './systems/createTankMuzzleFlashSystem';
 import boundarySystem from './systems/boundarySystem';
@@ -73,7 +72,6 @@ waitForAssetsToLoad.then(() => {
   escene.addSystem(createPietinSystem(scene));
   escene.addSystem(createShootableSystem(scene));
   escene.addSystem(hudSystem);
-  escene.addSystem(createFourPackSystem(scene));
   escene.addSystem(createLootSystem(scene));
   escene.addSystem(createTankMuzzleFlashSystem(scene));
   escene.addSystem(boundarySystem);
