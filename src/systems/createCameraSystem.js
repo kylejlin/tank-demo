@@ -1,10 +1,13 @@
-import { System, IndexSpec } from 'indexed-ecs';
+import { System } from 'becs';
 import { Vector3 } from 'three';
 
 const createCameraSystem = (camera) => {
   return new System(
-    (escene, [{ entities }]) => {
-      const dt = escene.globals.deltaTime;
+    [
+      ['PlayerTank', 'Tank', 'Position']
+    ],
+    ([entities], scene) => {
+      const dt = scene.globals.deltaTime;
       const dts = dt * 1e-3;
 
       const [ent] = entities;
@@ -16,10 +19,7 @@ const createCameraSystem = (camera) => {
 
       camera.position.set(ent.Position.x + 25, ent.Position.y + 25, ent.Position.z + 25);
       camera.lookAt(new Vector3(ent.Position.x, ent.Position.y, ent.Position.z));
-    },
-    [
-      new IndexSpec(['PlayerTank', 'Tank', 'Position'])
-    ]
+    }
   );
 };
 

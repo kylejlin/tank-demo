@@ -1,8 +1,9 @@
-import { Entity } from 'indexed-ecs';
 import assets from '../assets';
 import { AnimationMixer, AnimationClip } from 'three';
 
 const createTank = ({
+  isPlayerTank,
+
   position,
   maxHealth,
 
@@ -27,7 +28,13 @@ const createTank = ({
   const turretAction = turretMixer.clipAction(turretClip);
   turretAction.play();
 
-  return new Entity({
+  const playerTankComponent = isPlayerTank
+    ? { PlayerTank: {} }
+    : {};
+
+  return {
+    ...playerTankComponent,
+
     Tank: {
       maxHealth,
       turnSpeed,
@@ -60,7 +67,7 @@ const createTank = ({
     Shootable: {
       health: maxHealth,
     },
-  });
+  };
 };
 
 export default createTank;

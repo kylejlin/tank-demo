@@ -1,4 +1,3 @@
-import { Entity } from 'indexed-ecs';
 import assets from '../assets';
 
 const createFourPack = ({
@@ -6,7 +5,7 @@ const createFourPack = ({
 }) => {
   const { fourPackScene } = assets;
 
-  return new Entity({
+  return {
     ThreeScene: {
       scene: fourPackScene.clone(),
       isAdded: false,
@@ -30,7 +29,7 @@ const createFourPack = ({
       },
       pickUpSound: 'ammo',
     },
-  });
+  };
 };
 
 export default createFourPack;

@@ -1,4 +1,3 @@
-import { Entity } from 'indexed-ecs';
 import assets from '../assets';
 import createFourPack from './createFourPack';
 
@@ -8,7 +7,7 @@ const createDonut = ({
 }) => {
   const { donutScene } = assets;
 
-  return new Entity({
+  return {
     ThreeScene: {
       scene: donutScene.clone(),
       isAdded: false,
@@ -31,7 +30,7 @@ const createDonut = ({
     Shootable: {
       health,
     },
-  });
+  };
 };
 
 export default createDonut;

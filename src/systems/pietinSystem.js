@@ -1,4 +1,4 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 import assets from '../assets';
 import { Vector3, Euler, Group, Object3D } from 'three';
 import { Howl } from 'howler';
@@ -11,8 +11,12 @@ const tankFireSound = new Howl({
 });
 
 const pietinSystem = new System(
-  (escene, [{ entities }, { entities: tankEntities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Pietin', 'Position'],
+    ['Tank', 'PlayerTank']
+  ],
+  ([entities, tankEntities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     const [tankEnt] = tankEntities;
@@ -46,59 +50,59 @@ const pietinSystem = new System(
           ent.Pietin.currentFireCooldown = ent.Pietin.fireCooldown;
 
           const explRotY = ent.Pietin.rotY + 0.5 * Math.PI;
-          const explosion1 = new Entity();
-          explosion1.addComponent({
-            name: 'Explosion',
-            position: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 3.6, 4.8).applyEuler(new Euler(0, explRotY, 0))),
-            positionRandomness: .3,
-            velocity: (new Vector3(0, 0, 1.45)).applyEuler(new Euler(0, explRotY, 0)),
-            velocityRandomness: .0,
-            color: 0xaa4400,
-            colorRandomness: .1,
-            turbulence: .0,
-            lifetime: 0.1,
-            size: 5,
-            sizeRandomness: 1,
-            spawnRate: 2500,
-            emissionDuration: 0.03
-          });
-          escene.addEntity(explosion1);
-          const explosion2 = new Entity();
-          explosion2.addComponent({
-            name: 'Explosion',
-            position: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 3.6, 4.8).applyEuler(new Euler(0, explRotY, 0))),
-            positionRandomness: .3,
-            velocity: (new Vector3(0, 0, 1.45)).applyEuler(new Euler(0, explRotY, 0)),
-            velocityRandomness: .0,
-            color: 0xaa4400,
-            colorRandomness: .1,
-            turbulence: .0,
-            lifetime: 0.1,
-            size: 5,
-            sizeRandomness: 1,
-            spawnRate: 2500,
-            emissionDuration: 0.03,
-          });
-          escene.addEntity(explosion2);
+          const explosion1 = {
+            Explosion: {
+              position: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 3.6, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              positionRandomness: .3,
+              velocity: (new Vector3(0, 0, 1.45)).applyEuler(new Euler(0, explRotY, 0)),
+              velocityRandomness: .0,
+              color: 0xaa4400,
+              colorRandomness: .1,
+              turbulence: .0,
+              lifetime: 0.1,
+              size: 5,
+              sizeRandomness: 1,
+              spawnRate: 2500,
+              emissionDuration: 0.03,
+            },
+          };
+          scene.addEntity(explosion1);
+          const explosion2 = {
+            Explosion: {
+              position: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 3.6, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              positionRandomness: .3,
+              velocity: (new Vector3(0, 0, 1.45)).applyEuler(new Euler(0, explRotY, 0)),
+              velocityRandomness: .0,
+              color: 0xaa4400,
+              colorRandomness: .1,
+              turbulence: .0,
+              lifetime: 0.1,
+              size: 5,
+              sizeRandomness: 1,
+              spawnRate: 2500,
+              emissionDuration: 0.03,
+            },
+          };
+          scene.addEntity(explosion2);
 
-          const shot1 = new Entity();
-          shot1.addComponent({
-            name: 'Shot',
-            shooter: ent,
-            origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
-            direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
-            damage: ent.Pietin.damage * 0.5,
-          });
-          escene.addEntity(shot1);
-          const shot2 = new Entity();
-          shot2.addComponent({
-            name: 'Shot',
-            shooter: ent,
-            origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
-            direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
-            damage: ent.Pietin.damage * 0.5,
-          });
-          escene.addEntity(shot2);
+          const shot1 = {
+            Shot: {
+              shooter: ent,
+              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
+              damage: ent.Pietin.damage * 0.5,
+            },
+          };
+          scene.addEntity(shot1);
+          const shot2 = {
+            Shot: {
+              shooter: ent,
+              origin: new Vector3(ent.Position.x, ent.Position.y, ent.Position.z).add(new Vector3(-0.5, 1, 4.8).applyEuler(new Euler(0, explRotY, 0))),
+              direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, explRotY, 0)),
+              damage: ent.Pietin.damage * 0.5,
+            },
+          };
+          scene.addEntity(shot2);
 
           tankFireSound.play();
         }
@@ -106,11 +110,7 @@ const pietinSystem = new System(
 
       ent.Pietin.spinnables.rotation.y = ent.Pietin.rotY;
     }
-  },
-  [
-    new IndexSpec(['Pietin', 'Position']),
-    new IndexSpec(['Tank', 'PlayerTank'])
-  ]
+  }
 );
 
 export default pietinSystem;

@@ -1,4 +1,3 @@
-import { Entity } from 'indexed-ecs';
 import assets from '../assets';
 import { Group } from 'three';
 
@@ -23,7 +22,7 @@ const createPietin = ({
     });
   clone.add(spinnables);
 
-  return new Entity({
+  return {
     Pietin: {
       rotY: 0,
       aimingRange,
@@ -48,7 +47,7 @@ const createPietin = ({
     Shootable: {
       health,
     },
-  });
+  };
 };
 
 export default createPietin;

@@ -26,12 +26,12 @@ import tankFireSrc from './audio/tank-fire.mp3';
 import exposionSrc from './audio/longer-explosion.wav';
 import { Howl } from 'howler';
 
-import { Entity, Scene as ECSScene } from 'indexed-ecs';
+import { Scene32 } from 'becs';
 
 import createPietin from './creators/createPietin';
 import createTank from './creators/createTank';
 
-import createPendingRemovalSystem from './systems/createPendingRemovalSystem';
+import createThreeSceneDestructorSystem from './systems/createThreeSceneDestructorSystem';
 
 import createExplosionSystem from './systems/createExplosionSystem';
 import donutSpawnerSystem from  './systems/donutSpawnerSystem';
@@ -60,28 +60,28 @@ const TAU = 2 * Math.PI;
 
 const SPOT_COLOR = 0xaaaaaa;
 
-const scene = new Scene();
+const threeScene = new Scene();
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 
-const escene = new ECSScene();
+const scene = new Scene32();
 
 waitForAssetsToLoad.then(() => {
-  escene.addSystem(createExplosionSystem(scene));
-  escene.addSystem(donutSpawnerSystem);
-  escene.addSystem(playerControlSystem);
-  escene.addSystem(shotSystem);
-  escene.addSystem(createCameraSystem(camera));
-  escene.addSystem(pietinSystem);
-  escene.addSystem(shootableSystem);
-  escene.addSystem(hudSystem);
-  escene.addSystem(lootSystem);
-  escene.addSystem(createTankMuzzleFlashSystem(scene));
-  escene.addSystem(boundarySystem);
-  escene.addSystem(createThreeSceneSystem(scene));
+  scene.addSystem(createExplosionSystem(threeScene));
+  scene.addSystem(donutSpawnerSystem);
+  scene.addSystem(playerControlSystem);
+  scene.addSystem(shotSystem);
+  scene.addSystem(createCameraSystem(camera));
+  scene.addSystem(pietinSystem);
+  scene.addSystem(shootableSystem);
+  scene.addSystem(hudSystem);
+  scene.addSystem(lootSystem);
+  scene.addSystem(createTankMuzzleFlashSystem(threeScene));
+  scene.addSystem(boundarySystem);
+  scene.addSystem(createThreeSceneSystem(threeScene));
 
-  escene.addSystem(createPendingRemovalSystem(scene));
+  scene.addDestructorSystem(createThreeSceneDestructorSystem(threeScene));
 
-  const spawner = new Entity({
+  const spawner = {
     DonutSpawner: {
       cooldownRange: [2.5e3, 10e3],
       xRange: [-50, 50],
@@ -89,9 +89,10 @@ waitForAssetsToLoad.then(() => {
       zRange: [-50, 50],
       healthRange: [5, 20],
     },
-  });
-  escene.addEntity(spawner);
+  };
+  scene.addEntity(spawner);
   const tank = createTank({
+    isPlayerTank: true,
     position: {
       x: 0,
       y: 1,
@@ -104,10 +105,7 @@ waitForAssetsToLoad.then(() => {
     damage: 15,
     ammo: 25,
   });
-  tank.addComponent({
-    name: 'PlayerTank',
-  });
-  escene.addEntity(tank);
+  scene.addEntity(tank);
   const pietin1 = createPietin({
     position: {
       x: -15,
@@ -120,7 +118,7 @@ waitForAssetsToLoad.then(() => {
     damage: 2,
     fireCooldown: 0.1e3,
   });
-  escene.addEntity(pietin1);
+  scene.addEntity(pietin1);
   const pietin2 = createPietin({
     position: {
       x: -20,
@@ -133,12 +131,12 @@ waitForAssetsToLoad.then(() => {
     fireCooldown: 0.1e3,
     damage: 2,
   });
-  escene.addEntity(pietin2);
+  scene.addEntity(pietin2);
 
   gameLoop();
 });
 
-scene.background = new Color(0x005588);
+threeScene.background = new Color(0x005588);
 const renderer = new WebGLRenderer();
 renderer.physicallyCorrectLights = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -146,7 +144,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.render(scene, camera);
+  renderer.render(threeScene, camera);
 });
 document.body.appendChild(renderer.domElement);
 
@@ -154,10 +152,10 @@ const spot1 = new SpotLight(SPOT_COLOR);
 const spot2 = new SpotLight(SPOT_COLOR);
 const spot3 = new SpotLight(SPOT_COLOR);
 const spot4 = new SpotLight(SPOT_COLOR);
-scene.add(spot1);
-scene.add(spot2);
-scene.add(spot3);
-scene.add(spot4);
+threeScene.add(spot1);
+threeScene.add(spot2);
+threeScene.add(spot3);
+threeScene.add(spot4);
 spot1.power = spot2.power = spot3.power = spot4.power = 4 * Math.PI;
 spot1.position.set(50, 10, 50);
 spot2.position.set(-50, 10, 50);
@@ -176,7 +174,7 @@ const floor = new Mesh(
   floorMat
 );
 floor.rotation.x -= 0.25 * TAU;
-scene.add(floor);
+threeScene.add(floor);
 
 let then = Date.now();
 const gameLoop = () => {
@@ -186,9 +184,9 @@ const gameLoop = () => {
   const dt = now - then;
   then = now;
 
-  escene.globals.deltaTime = dt;
-  escene.update();
-  renderer.render(scene, camera);
+  scene.globals.deltaTime = dt;
+  scene.update();
+  renderer.render(threeScene, camera);
 };
 
 // Just so the user doesn't have to stare at a blank screen while waiting for
@@ -196,6 +194,6 @@ const gameLoop = () => {
 const initRender = () => {
   camera.position.set(25, 26, 25);
   camera.lookAt(new Vector3(0, 1, 0));
-  renderer.render(scene, camera);
+  renderer.render(threeScene, camera);
 };
 initRender();

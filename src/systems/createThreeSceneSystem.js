@@ -1,12 +1,15 @@
-import { System, IndexSpec } from 'indexed-ecs';
+import { System } from 'becs';
 
-const createThreeSceneSystem = (scene) => {
+const createThreeSceneSystem = (threeScene) => {
   return new System(
-    (escene, [{ entities }]) => {
+    [
+      ['ThreeScene', 'Position']
+    ],
+    ([entities], scene) => {
       for (const ent of entities) {
         if (!ent.ThreeScene.isAdded) {
           ent.ThreeScene.isAdded = true;
-          scene.add(ent.ThreeScene.scene);
+          threeScene.add(ent.ThreeScene.scene);
         }
 
         ent.ThreeScene.scene.position.set(
@@ -23,10 +26,7 @@ const createThreeSceneSystem = (scene) => {
           );
         }
       }
-    },
-    [
-      new IndexSpec(['ThreeScene', 'Position'])
-    ]
+    }
   );
 };
 

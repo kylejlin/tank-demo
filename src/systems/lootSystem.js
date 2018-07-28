@@ -1,4 +1,4 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 import { Vector3, Raycaster, Euler } from 'three';
 import { Howl } from 'howler';
 // Trimmed from https://www.youtube.com/watch?v=Igym4-KVFPc
@@ -12,8 +12,12 @@ const pickUpSounds = {
 };
 
 const lootSystem = new System(
-  (escene, [{ entities }, { entities: tankEntities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Loot', 'Rotation'],
+    ['PlayerTank', 'Tank']
+  ],
+  ([entities, tankEntities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     const [tankEnt] = tankEntities;
@@ -54,18 +58,12 @@ const lootSystem = new System(
             pickUpSounds[ent.Loot.pickUpSound].play();
           }
 
-          ent.addComponent({
-            name: 'PendingRemoval',
-          });
+          scene.removeEntity(ent);
           break;
         }
       }
     }
-  },
-  [
-    new IndexSpec(['Loot', 'Rotation']),
-    new IndexSpec(['PlayerTank', 'Tank'])
-  ]
+  }
 );
 
 export default lootSystem;

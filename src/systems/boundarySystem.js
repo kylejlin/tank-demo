@@ -1,11 +1,14 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 
 const MAP_SIZE = 100;
 const MIN_Y = -100;
 
 const boundarySystem = new System(
-  (escene, [{ entities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Position', 'Shootable']
+  ],
+  ([entities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     for (const ent of entities) {
@@ -18,10 +21,7 @@ const boundarySystem = new System(
         ent.Shootable.health = 0;
       }
     }
-  },
-  [
-    new IndexSpec(['Position', 'Shootable'])
-  ]
+  }
 );
 
 export default boundarySystem;

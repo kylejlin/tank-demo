@@ -1,4 +1,4 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 import lightCannonThumbnailSrc from '../images/light-cannon-shell-four-pack-thumbnail.png';
 
 const lightCannonBg = document.querySelector('.light-cannon-bg');
@@ -9,8 +9,11 @@ const healthBarFg = document.querySelector('.health-bar-fg');
 const lightCannonFg = document.querySelector('.light-cannon-fg');
 
 const hudSystem = new System(
-  (escene, [{ entities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Tank', 'PlayerTank', 'Shootable']
+  ],
+  ([entities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     const [ent] = entities;
@@ -25,10 +28,7 @@ const hudSystem = new System(
     healthBarFg.style.display = 'block';
 
     lightCannonFg.innerHTML = ent.Tank.ammo;
-  },
-  [
-    new IndexSpec(['Tank', 'PlayerTank', 'Shootable'])
-  ]
+  }
 );
 
 export default hudSystem;

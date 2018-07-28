@@ -1,9 +1,13 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 import { Raycaster, Vector3 } from 'three';
 
 const shotSystem = new System(
-  (escene, [{ entities: shotEntities }, { entities: shootableEntities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Shot'],
+    ['Shootable', 'ThreeScene']
+  ],
+  ([shotEntities, shootableEntities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     for (const shotEnt of shotEntities) {
@@ -31,32 +35,28 @@ const shotSystem = new System(
 
       if (closestEnt !== null) {
         closestEnt.Shootable.health -= shotEnt.Shot.damage;
-        const explosion = new Entity();
-        explosion.addComponent({
-          name: 'Explosion',
-          position: closestHit.point.clone(),
-          positionRandomness: 1,
-          velocity: new Vector3(0, 0.1, 0),
-          velocityRandomness: .2,
-          color: 0xff8500,
-          colorRandomness: .1,
-          turbulence: 0.0,
-          lifetime: 0.1,
-          size: 5,
-          sizeRandomness: 3,
-          spawnRate: 25000,
-          emissionDuration: 0.05,
-        });
-        escene.addEntity(explosion);
+        const explosion = {
+          Explosion: {
+            position: closestHit.point.clone(),
+            positionRandomness: 1,
+            velocity: new Vector3(0, 0.1, 0),
+            velocityRandomness: .2,
+            color: 0xff8500,
+            colorRandomness: .1,
+            turbulence: 0.0,
+            lifetime: 0.1,
+            size: 5,
+            sizeRandomness: 3,
+            spawnRate: 25000,
+            emissionDuration: 0.05,
+          },
+        };
+        scene.addEntity(explosion);
       }
 
-      escene.removeEntity(shotEnt);
+      scene.removeEntity(shotEnt);
     }
-  },
-  [
-    new IndexSpec(['Shot']),
-    new IndexSpec(['Shootable', 'ThreeScene'])
-  ]
+  }
 );
 
 export default shotSystem;

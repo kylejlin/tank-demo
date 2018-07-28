@@ -1,33 +1,33 @@
-import { System, IndexSpec } from 'indexed-ecs';
+import { System } from 'becs';
 import GPUParticleSystem from '../GPUParticleSystem';
 
-const createExplosionSystem = (scene) => {
+const createExplosionSystem = (threeScene) => {
   return new System(
-    (escene, [{ entities }]) => {
-      const dt = escene.globals.deltaTime;
+    [
+      ['Explosion']
+    ],
+    ([entities], scene) => {
+      const dt = scene.globals.deltaTime;
       const dts = dt * 1e-3;
 
-      if (!escene.globals.particleSystem) {
-        escene.globals.particleSystem = new GPUParticleSystem();
-        escene.globals.particleSystemTimeInSeconds = 0;
-        scene.add(escene.globals.particleSystem);
+      if (!scene.globals.particleSystem) {
+        scene.globals.particleSystem = new GPUParticleSystem();
+        scene.globals.particleSystemTimeInSeconds = 0;
+        threeScene.add(scene.globals.particleSystem);
       }
 
-      escene.globals.particleSystemTimeInSeconds += dts;
-      escene.globals.particleSystem.update(escene.globals.particleSystemTimeInSeconds);
+      scene.globals.particleSystemTimeInSeconds += dts;
+      scene.globals.particleSystem.update(scene.globals.particleSystemTimeInSeconds);
 
       for (const ent of entities) {
         if (ent.Explosion.emissionDuration > 0) {
           ent.Explosion.emissionDuration -= dts;
           for (let i = 0; i < ent.Explosion.spawnRate * dts; i++) {
-            escene.globals.particleSystem.spawnParticle(ent.Explosion);
+            scene.globals.particleSystem.spawnParticle(ent.Explosion);
           }
         }
       }
-    },
-    [
-      new IndexSpec(['Explosion'])
-    ]
+    }
   )
 };
 

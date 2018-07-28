@@ -1,4 +1,4 @@
-import { System, IndexSpec, Entity } from 'indexed-ecs';
+import { System } from 'becs';
 import { Vector3, Euler } from 'three';
 import { Howl } from 'howler';
 // http://soundbible.com/1919-Shotgun-Blast.html
@@ -40,8 +40,11 @@ window.addEventListener('keyup', (e) => {
 });
 
 const playerControlSystem = new System(
-  (escene, [{ entities }]) => {
-    const dt = escene.globals.deltaTime;
+  [
+    ['Tank', 'PlayerTank']
+  ],
+  ([entities], scene) => {
+    const dt = scene.globals.deltaTime;
     const dts = dt * 1e-3;
 
     for (const ent of entities) {
@@ -75,38 +78,38 @@ const playerControlSystem = new System(
         const { x, y, z } = ent.Position;
         const rotY = ent.Rotation.y;
         const { damage } = ent.Tank;
-        const shot = new Entity();
-        shot.addComponent({
-          name: 'Shot',
-          shooter: ent,
-          origin: new Vector3(x + Math.sin(rotY) * 2.3, y + 1.6, z + Math.cos(rotY) * 2.3),
-          direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, rotY, 0)),
-          damage,
-        });
-        escene.addEntity(shot);
+        const shot = {
+          Shot: {
+            shooter: ent,
+            origin: new Vector3(x + Math.sin(rotY) * 2.3, y + 1.6, z + Math.cos(rotY) * 2.3),
+            direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, rotY, 0)),
+            damage,
+          },
+        };
+        scene.addEntity(shot);
 
         tankFireSound.play();
 
         ent.Tank.gunMixer.time = 0;
         ent.Tank.turretMixer.time = 0;
 
-        const muzzleFlash = new Entity();
-        muzzleFlash.addComponent({
-          name: 'TankMuzzleFlash',
-          position: new Vector3(0, 0, 0),
-        	positionRandomness: .3,
-        	velocity: new Vector3(0, 0, 1.45),
-        	velocityRandomness: .0,
-        	color: 0xaa4400,
-        	colorRandomness: .1,
-        	turbulence: .0,
-        	lifetime: 0.2,
-        	size: 5,
-        	sizeRandomness: 1,
-          spawnRate: 2500,
-          emissionDuration: 0.2,
-        });
-        escene.addEntity(muzzleFlash);
+        const muzzleFlash = {
+          TankMuzzleFlash: {
+            position: new Vector3(0, 0, 0),
+          	positionRandomness: .3,
+          	velocity: new Vector3(0, 0, 1.45),
+          	velocityRandomness: .0,
+          	color: 0xaa4400,
+          	colorRandomness: .1,
+          	turbulence: .0,
+          	lifetime: 0.2,
+          	size: 5,
+          	sizeRandomness: 1,
+            spawnRate: 2500,
+            emissionDuration: 0.2,
+          },
+        };
+        scene.addEntity(muzzleFlash);
       }
 
       if (ent.Tank.currentFireCooldown > ent.Tank.fireCooldown - 0.375e3/*AnimationClip.findByName(tankAnimations, 'GunAction').duration * 1e3*/) {
@@ -114,10 +117,7 @@ const playerControlSystem = new System(
         ent.Tank.turretMixer.update(dts);
       }
     }
-  },
-  [
-    new IndexSpec(['Tank', 'PlayerTank'])
-  ]
+  }
 );
 
 export default playerControlSystem;
