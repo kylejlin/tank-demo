@@ -27,7 +27,7 @@ const waitForAssetsToLoad = Promise.all([
   }),
 
   new Promise((resolve) => {
-    (new GLTFLoader()).load('./models/tank2.glb', (gltf) => {
+    (new GLTFLoader()).load('./models/tank.glb', (gltf) => {
       assets.tankScene = gltf.scene;
       // TODO reconsider...
       assets.tankAnimations = gltf.animations;
