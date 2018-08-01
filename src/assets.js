@@ -33,6 +33,14 @@ const waitForAssetsToLoad = Promise.all([
       assets.tankAnimations = gltf.animations;
       resolve();
     });
+  }),
+
+  new Promise((resolve) => {
+    new GLTFLoader().load('./models/soldier.glb', (gltf) => {
+      assets.soldierScene = gltf.scene;
+      assets.soldierAnimations = gltf.animations;
+      resolve();
+    });
   })
 ]);
 
