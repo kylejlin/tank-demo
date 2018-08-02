@@ -143,7 +143,7 @@ waitForAssetsToLoad.then(() => {
       z: -15,
     },
     moveSpeed: 0.005,
-    damage: 10,
+    damage: 1,
     fireCooldown: 1e3,
     seeingRange: 45,
     firingRange: 15,
