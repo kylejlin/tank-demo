@@ -130,6 +130,15 @@ const soldierSystem = new System(
                   emissionDuration: 0.1,
                 },
               });
+              const trueTheta = theta - GUN_ANGLE_OFFSET;
+              scene.addEntity({
+                Shot: {
+                  shooter: ent,
+                  origin: new Vector3(ent.Position.x, 1, ent.Position.z),
+                  direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, trueTheta, 0)),
+                  damage: ent.Soldier.damage,
+                },
+              });
             }
           }
         } else if (dist < ent.Soldier.seeingRange) {
