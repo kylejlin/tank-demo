@@ -93,13 +93,13 @@ waitForAssetsToLoad.then(() => {
       healthRange: [5, 20],
     },
   };
-  //scene.addEntity(spawner);
+  scene.addEntity(spawner);
   const tank = createTank({
     isPlayerTank: true,
     position: {
-      x: 0,
+      x: 30,
       y: 1,
-      z: 0,
+      z: 30,
     },
     maxHealth: 100,
     turnSpeed: 0.002,
@@ -135,20 +135,27 @@ waitForAssetsToLoad.then(() => {
     damage: 2,
   });
   scene.addEntity(pietin2);
-  const soldier = createSoldier({
-    health: 15,
-    position: {
-      x: -15,
-      y: 0,
-      z: -15,
-    },
-    moveSpeed: 0.005,
-    damage: 1,
-    fireCooldown: 1e3,
-    seeingRange: 45,
-    firingRange: 15,
-  });
-  scene.addEntity(soldier);
+  for (let i = -10; i < 10; i++) {
+    const soldier = createSoldier({
+      health: 15,
+      position: {
+        x: -5 + i * 2,
+        y: 0,
+        z: -5 - i * 2,
+      },
+      rotation: {
+        x: 0,
+        y: 0.7,
+        z: 0,
+      },
+      moveSpeed: 0.005,
+      damage: 1,
+      fireCooldown: 1e3,
+      seeingRange: 30,
+      firingRange: 15,
+    });
+    scene.addEntity(soldier);
+  }
 
   gameLoop();
 });

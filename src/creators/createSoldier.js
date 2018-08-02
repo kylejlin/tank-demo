@@ -12,6 +12,7 @@ const createMedkit = () => null;
 
 const createSoldier = ({
   position,
+  rotation,
   health,
 
   moveSpeed,
@@ -74,9 +75,9 @@ const createSoldier = ({
     },
 
     Rotation: {
-      x: 0,
-      y: 0,
-      z: 0,
+      x: rotation.x || 0,
+      y: rotation.y || 0,
+      z: rotation.z || 0,
     },
 
     LootDropper: {
