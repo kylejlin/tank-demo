@@ -40,6 +40,7 @@ const playRunAnim = (ent) => {
 };
 
 const GUN_ANGLE_OFFSET = -0.1;
+const MAX_ERROR = 0.1;
 
 const soldierSystem = new System(
   [
@@ -67,7 +68,7 @@ const soldierSystem = new System(
       if (ent.Soldier.state === 'CROUCHED') {
         if (dist < ent.Soldier.firingRange) {
           const theta = Math.atan2(dx, dz) + GUN_ANGLE_OFFSET;
-          if (ent.Rotation.y !== theta) {
+          if (Math.abs(ent.Rotation.y - theta) > MAX_ERROR) {
             ent.Soldier.state = 'RISING';
             playRiseAnim(ent);
           } else {
@@ -134,7 +135,7 @@ const soldierSystem = new System(
               scene.addEntity({
                 Shot: {
                   shooter: ent,
-                  origin: new Vector3(ent.Position.x, 1, ent.Position.z),
+                  origin: new Vector3(ent.Position.x, 1.75, ent.Position.z),
                   direction: (new Vector3(0, 0, 1)).applyEuler(new Euler(0, trueTheta, 0)),
                   damage: ent.Soldier.damage,
                 },
