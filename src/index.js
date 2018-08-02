@@ -30,6 +30,7 @@ import { Scene32 } from 'becs';
 
 import createPietin from './creators/createPietin';
 import createTank from './creators/createTank';
+import createSoldier from './creators/createSoldier';
 
 import createThreeSceneDestructorSystem from './systems/createThreeSceneDestructorSystem';
 
@@ -45,6 +46,7 @@ import lootSystem from './systems/lootSystem';
 import createTankMuzzleFlashSystem from './systems/createTankMuzzleFlashSystem';
 import boundarySystem from './systems/boundarySystem';
 import createThreeSceneSystem from './systems/createThreeSceneSystem';
+import soldierSystem from './systems/soldierSystem';
 
 const tankFireSound = new Howl({
   src: tankFireSrc,
@@ -78,6 +80,7 @@ waitForAssetsToLoad.then(() => {
   scene.addSystem(createTankMuzzleFlashSystem(threeScene));
   scene.addSystem(boundarySystem);
   scene.addSystem(createThreeSceneSystem(threeScene));
+  scene.addSystem(soldierSystem);
 
   scene.addDestructorSystem(createThreeSceneDestructorSystem(threeScene));
 
@@ -90,7 +93,7 @@ waitForAssetsToLoad.then(() => {
       healthRange: [5, 20],
     },
   };
-  scene.addEntity(spawner);
+  //scene.addEntity(spawner);
   const tank = createTank({
     isPlayerTank: true,
     position: {
@@ -132,6 +135,20 @@ waitForAssetsToLoad.then(() => {
     damage: 2,
   });
   scene.addEntity(pietin2);
+  const soldier = createSoldier({
+    health: 15,
+    position: {
+      x: -15,
+      y: 0,
+      z: -15,
+    },
+    moveSpeed: 0.005,
+    damage: 10,
+    fireCooldown: 1e3,
+    seeingRange: 45,
+    firingRange: 15,
+  });
+  scene.addEntity(soldier);
 
   gameLoop();
 });

@@ -11,7 +11,6 @@ const createThreeSceneSystem = (threeScene) => {
           ent.ThreeScene.isAdded = true;
           threeScene.add(ent.ThreeScene.scene);
         }
-
         ent.ThreeScene.scene.position.set(
           ent.Position.x,
           ent.Position.y,

@@ -38,6 +38,7 @@ const waitForAssetsToLoad = Promise.all([
   new Promise((resolve) => {
     new GLTFLoader().load('./models/soldier.glb', (gltf) => {
       assets.soldierScene = gltf.scene;
+      assets.soldierScene.scale.set(0.5, 0.5, 0.5);
       assets.soldierAnimations = gltf.animations;
       resolve();
     });
