@@ -7,14 +7,36 @@ const rifleSound = new Howl({
   src: rifleSrc,
 });
 
-// const setActiveAnimation = (ent, active) => {
-//   const actionKeys = ['runAction', 'aimAction', 'riseAction', 'fireAction'];
-//   for (const key of actionKeys) {
-//     ent.Soldier[key].weight = key === active
-//       ? 1
-//       : 0;
-//   }
-// };
+const playFireAnim = (ent) => {
+  ent.Soldier.fireAction.weight = 1;
+  ent.Soldier.runAction.weight = 0;
+  ent.Soldier.aimAction.weight = 0;
+  ent.Soldier.riseAction.weight = 0;
+  ent.Soldier.fireAction.reset().play();
+};
+
+const playRiseAnim = (ent) => {
+  ent.Soldier.riseAction.weight = 1;
+  ent.Soldier.runAction.weight = 0;
+  ent.Soldier.aimAction.weight = 0;
+  ent.Soldier.fireAction.weight = 0;
+  ent.Soldier.riseAction.reset().play();
+};
+
+const playAimAnim = (ent) => {
+  ent.Soldier.aimAction.weight = 1;
+  ent.Soldier.runAction.weight = 0;
+  ent.Soldier.riseAction.weight = 0;
+  ent.Soldier.fireAction.weight = 0;
+  ent.Soldier.aimAction.reset().play();
+};
+
+const playRunAnim = (ent) => {
+  ent.Soldier.runAction.weight = 1;
+  ent.Soldier.aimAction.weight = 0;
+  ent.Soldier.riseAction.weight = 0;
+  ent.Soldier.fireAction.weight = 0;
+};
 
 const soldierSystem = new System(
   [
@@ -41,22 +63,20 @@ const soldierSystem = new System(
 
       if (ent.Soldier.state === 'CROUCHED') {
         if (dist < ent.Soldier.firingRange) {
-          if (ent.Soldier.currentFireCooldown <= 0) {
-            ent.Soldier.currentFireCooldown = ent.Soldier.fireCooldown;
-            ent.Soldier.state = 'FIRING';
-            ent.Soldier.fireAction.weight = 1;
-            ent.Soldier.runAction.weight = 0;
-            ent.Soldier.aimAction.weight = 0;
-            ent.Soldier.riseAction.weight = 0;
-            ent.Soldier.fireAction.reset().play();
+          const theta = Math.atan2(dx, dz);
+          if (ent.Rotation.y !== theta) {
+            ent.Soldier.state = 'RISING';
+            playRiseAnim(ent);
+          } else {
+            if (ent.Soldier.currentFireCooldown <= 0) {
+              ent.Soldier.currentFireCooldown = ent.Soldier.fireCooldown;
+              ent.Soldier.state = 'FIRING';
+              playFireAnim(ent);
+            }
           }
         } else if (dist < ent.Soldier.seeingRange) {
           ent.Soldier.state = 'RISING';
-          ent.Soldier.riseAction.weight = 1;
-          ent.Soldier.runAction.weight = 0;
-          ent.Soldier.aimAction.weight = 0;
-          ent.Soldier.fireAction.weight = 0;
-          ent.Soldier.riseAction.reset().play();
+          playRiseAnim(ent);
         }
       } else if (ent.Soldier.state === 'RUNNING') {
         ent.Soldier.runAction.play();
@@ -69,11 +89,7 @@ const soldierSystem = new System(
           ent.Position.z += normalizedZ * dt * ent.Soldier.moveSpeed;
         } else {
           ent.Soldier.state = 'AIMING';
-          ent.Soldier.aimAction.weight = 1;
-          ent.Soldier.runAction.weight = 0;
-          ent.Soldier.riseAction.weight = 0;
-          ent.Soldier.fireAction.weight = 0;
-          ent.Soldier.aimAction.reset().play();
+          playAimAnim(ent);
         }
       } else if (ent.Soldier.state === 'AIMING') {
         if (ent.Soldier.aimAction.paused) {
@@ -82,10 +98,7 @@ const soldierSystem = new System(
       } else if (ent.Soldier.state === 'RISING') {
         if (ent.Soldier.riseAction.paused) {
           ent.Soldier.state = 'RUNNING';
-          ent.Soldier.runAction.weight = 1;
-          ent.Soldier.aimAction.weight = 0;
-          ent.Soldier.riseAction.weight = 0;
-          ent.Soldier.fireAction.weight = 0;
+          playRunAnim(ent);
         }
       } else if (ent.Soldier.state === 'FIRING') {
         if (ent.Soldier.fireAction.paused) {

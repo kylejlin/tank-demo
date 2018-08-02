@@ -1,5 +1,7 @@
 import { Skeleton } from 'three';
 
+// https://gist.github.com/cdata/f2d7a6ccdec071839bc1954c32595e87
+
 const cloneGltf = (gltf) => {
   const clone = {
     animations: gltf.animations,
