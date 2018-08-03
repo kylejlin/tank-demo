@@ -28,7 +28,6 @@ const createSoldier = ({
     scene: soldierScene,
     animations: soldierAnimations
   }).scene;
-  console.log(clone);
   const mixer = new AnimationMixer(clone);
   const runClip = AnimationClip.findByName(soldierAnimations, 'Run');
   const aimClip = AnimationClip.findByName(soldierAnimations, 'Aim');
